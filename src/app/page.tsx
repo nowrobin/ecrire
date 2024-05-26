@@ -1,59 +1,81 @@
 "use client";
 
+import { Span } from "next/dist/trace";
 import Image from "next/image";
 import { useState } from "react";
+
+interface Print {
+  content: string;
+  wordIndex: number;
+}
 
 export default function Home() {
   const [current, setCurrent] = useState(0);
   const [textValue, setTextValue] = useState("");
+  const [inputValue, setInputValue] = useState<string[]>([]);
   const quote = {
     title: "눈물을 마시는 새",
     author: "이영도",
     content:
       "아름다운 나의 벗이여, 내 형제여. 살았을 적 언제나 내 곁에, 죽은 후엔 영원히 내 속에 남은 이여 다시 돌아온 봄이건만, 꽃잎 맞으며 그대와 거닐 수 없으니 봄은 왔으되 결코 봄이 아니구나.",
   };
+
   const contents = quote.content.split(" ");
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+  const handleTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    console.log(e.currentTarget.value);
+    setTextValue(e.currentTarget.value);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     const key = e.key;
     if (key == " " || key == "Spacebar") {
-      if (current >= contents.length) {
-        setCurrent((prev) => prev++);
+      if (contents.length > current) {
+        setCurrent((prev) => ++prev);
         setTextValue("");
+        setInputValue((prev) => [...prev, textValue]);
       }
     }
   };
 
-  const handleTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setTextValue(e.currentTarget.value);
-    // let result = compare(e.currentTarget.value, contents[current]);
+  const PrintGenerator = ({ wordIndex, content }: Print) => {
+    let contentletter = content.split("");
+    let letter = textValue.split("");
+
+    return (
+      <span className="flex flex-row w-[32rem] h-[60rem]">
+        {contentletter.map((value, letterIndex) => {
+          return current == wordIndex && letter[letterIndex] ? (
+            <span key={letterIndex} className="text-white">
+              {letter[letterIndex]}
+            </span>
+          ) : (
+            <span key={letterIndex} className="text-[#818181]">
+              {value}
+            </span>
+          );
+        })}
+      </span>
+    );
   };
 
-  // const compare = (inputValue: string, contentValue: string) => {
-  //   if (inputValue == contentValue) {
-  //     //success
-  //   }
-  // };
-  console.log(current, textValue);
-
   return (
-    <div
-      id="print"
-      className="flex bg-[ rgb(255, 255, 255)] w-[32rem]"
-      onKeyDown={handleKeyDown}
-    >
-      {/* {contents.map((value, index) => {
+    <div id="print" className="flex bg-[ rgb(255, 255, 255)] w-[32rem] gap-1">
+      {contents.map((value, index) => {
         return (
-          <span className="text-[#818181]" key={index}>
-            {value}
-          </span>
+          <PrintGenerator
+            key={index}
+            wordIndex={index}
+            content={value}
+          ></PrintGenerator>
         );
-      })} */}
-      <div className="text-[#818181]">{quote.content}</div>
+      })}
+
       <textarea
-        className="absolute bg-transparent text-white w-[32rem]"
+        className="absolute  bg-transparent text-transparent w-[32rem]"
         onChange={handleTextArea}
         value={textValue}
+        onKeyDown={handleKeyDown}
       ></textarea>
     </div>
   );
