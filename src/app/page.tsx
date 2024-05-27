@@ -23,18 +23,15 @@ export default function Home() {
   const contents = quote.content.split(" ");
 
   const handleTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    console.log(e.currentTarget.value);
     setTextValue(e.currentTarget.value);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     const key = e.key;
     if (key == " " || key == "Spacebar") {
-      if (contents.length > current) {
-        setCurrent((prev) => ++prev);
-        setTextValue("");
-        setInputValue((prev) => [...prev, textValue]);
-      }
+      setCurrent((prev) => ++prev);
+      setInputValue((prev) => [...prev, textValue.trim()]);
+      setTextValue("");
     }
   };
 
@@ -45,15 +42,23 @@ export default function Home() {
     return (
       <span className="flex flex-row w-[32rem] h-[60rem]">
         {contentletter.map((value, letterIndex) => {
-          return current == wordIndex && letter[letterIndex] ? (
-            <span key={letterIndex} className="text-white">
-              {letter[letterIndex]}
-            </span>
-          ) : (
-            <span key={letterIndex} className="text-[#818181]">
-              {value}
-            </span>
-          );
+          if (content == inputValue[wordIndex]) {
+            return (
+              <span key={letterIndex} className="text-white">
+                {value}
+              </span>
+            );
+          } else {
+            return current == wordIndex && letter[letterIndex] ? (
+              <span key={letterIndex} className="text-white">
+                {letter[letterIndex]}
+              </span>
+            ) : (
+              <span key={letterIndex} className="text-[#818181]">
+                {value}
+              </span>
+            );
+          }
         })}
       </span>
     );
@@ -70,12 +75,11 @@ export default function Home() {
           ></PrintGenerator>
         );
       })}
-
       <textarea
         className="absolute  bg-transparent text-transparent w-[32rem]"
         onChange={handleTextArea}
         value={textValue}
-        onKeyDown={handleKeyDown}
+        onKeyUp={handleKeyDown}
       ></textarea>
     </div>
   );
