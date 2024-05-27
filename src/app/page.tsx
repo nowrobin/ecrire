@@ -40,7 +40,7 @@ export default function Home() {
     let letter = textValue.split("");
 
     return (
-      <span className="flex flex-row w-[32rem] h-[60rem]">
+      <span className="flex flex-row w-[32rem] h-[10rem]">
         {contentletter.map((value, letterIndex) => {
           if (content == inputValue[wordIndex]) {
             return (
@@ -65,22 +65,27 @@ export default function Home() {
   };
 
   return (
-    <div id="print" className="flex bg-[ rgb(255, 255, 255)] w-[32rem] gap-1">
-      {contents.map((value, index) => {
-        return (
-          <PrintGenerator
-            key={index}
-            wordIndex={index}
-            content={value}
-          ></PrintGenerator>
-        );
-      })}
-      <textarea
-        className="absolute  bg-transparent text-transparent w-[32rem]"
-        onChange={handleTextArea}
-        value={textValue}
-        onKeyUp={handleKeyDown}
-      ></textarea>
+    <div className="flex flex-col items-start w-[50%] m-32">
+      <div id="print" className="flex bg-[ rgb(255, 255, 255)] w-[30rem] gap-1">
+        {contents.map((value, index) => {
+          return (
+            <PrintGenerator
+              key={index}
+              wordIndex={index}
+              content={value}
+            ></PrintGenerator>
+          );
+        })}
+        <textarea
+          className="absolute  bg-transparent text-transparent w-[32rem] focus:outline-none resize-none"
+          onChange={handleTextArea}
+          value={textValue}
+          onKeyUp={handleKeyDown}
+        ></textarea>
+      </div>
+      <hr className=" w-[100%] h-[0.75px] bg-white"></hr>
+      <div>{quote.author}</div>
+      <div>{quote.title}</div>
     </div>
   );
 }
