@@ -25,8 +25,8 @@ export default function UserFeedback() {
     return (
       <div className="flex flex-row">
         <div className="felx flex-col">
-          <div>{upvote}</div>
-          <div>{downvote}</div>
+          <button></button>
+          <button></button>
         </div>
         <div>{feedback}</div>
       </div>
