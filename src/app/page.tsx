@@ -13,57 +13,46 @@ interface Letter extends Word {
 }
 
 export default function Home() {
-  const [wordCurrent, setWordCurrent] = useState(0); // word current
-
-  const [letterCurrent, setLetterCurrent] = useState(0);
-
+  // const [wordCurrent, setWordCurrent] = useState(0); // word current
+  // const [letterCurrent, setLetterCurrent] = useState(0);
   //For sentence
   const [sentenceCurrent, setSentenceCurrent] = useState(0); //sentence Current position
-  const [textValueC, setTextValueC] = useState(""); // for textArea value
-
   const [textValue, setTextValue] = useState(""); //for the print text
-  const [inputValue, setInputValue] = useState<string[]>([]);
-  const [inputCollection, setInputCollection] = useState<any[]>([]);
-  const [compare, setCompare] = useState(false);
+  // const [inputValue, setInputValue] = useState<string[]>([]);
+  // const [inputCollection, setInputCollection] = useState<any[]>([]);
   const quote = {
     title: "눈물을 마시는 새",
     author: "이영도",
     content:
-      "아름다운 나의 벗이여, 내 형제여. 살았을 적 언제나 내 곁에,\n 죽은 후엔 영원히 내 속에 남은 이여 다시 돌아온 봄이건만,\n 꽃잎 맞으며 그대와 거닐 수 없으니 봄은 왔으되 결코 봄이 아니구나.",
+      "아름다운 나의 벗이여, 내 형제여. 살았을 적 언제나 내 곁에,\n죽은 후엔 영원히 내 속에 남은 이여 다시 돌아온 봄이건만,\n꽃잎 맞으며 그대와 거닐 수 없으니 봄은 왔으되 결코 봄이 아니구나.",
   };
 
   const sentences = quote.content.split("\n");
 
-  const contents = quote.content.split(" ");
+  // const contents = quote.content.split(" ");
 
   const handleTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    let targetValue = e.currentTarget.value;
-    let targetLength = targetValue.length;
-    if (sentenceCurrent !== 0) {
-      for (let i = 0; i < sentenceCurrent; i++) {
-        targetLength = targetValue.substring(sentences[i].length + 1).length;
-      }
-      if (targetLength == sentences[sentenceCurrent].length) {
-        e.currentTarget.value += "\n";
-        setInputCollection((prev) => [...prev, e.currentTarget.value]);
-        setSentenceCurrent((prev) => ++prev);
-      }
-    } else if (targetLength == sentences[sentenceCurrent].length) {
+    let targetValue = e.currentTarget.value.split("\n");
+    let targetLength = targetValue[sentenceCurrent].length;
+
+    if (targetLength == sentences[sentenceCurrent].length) {
       e.currentTarget.value += "\n";
+      if (sentenceCurrent + 1 >= sentences.length) {
+        alert("The End");
+      }
       setSentenceCurrent((prev) => ++prev);
     }
-
-    setLetterCurrent(targetValue.length);
+    // setLetterCurrent(targetValue.length);
     setTextValue(e.currentTarget.value);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    const key = e.key;
-    if (key == " " || key == "Spacebar") {
-      setWordCurrent((prev) => ++prev);
-      setInputValue((prev) => [...prev, textValue.trim()]);
-    }
-  };
+  // const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  //   const key = e.key;
+  //   if (key == " " || key == "Spacebar") {
+  //     //setWordCurrent((prev) => ++prev);
+  //     // setInputValue((prev) => [...prev, textValue.trim()]);
+  //   }
+  // };
 
   const LetterGenerator = ({
     wordIndex,
@@ -71,48 +60,26 @@ export default function Home() {
     sentenceIndex,
     letters,
   }: Letter) => {
-    let inputletter: string[] = [""];
-    if (sentenceCurrent != 0) {
-      for (let i = 0; i < sentenceCurrent; i++) {
-        inputletter = textValue.substring(sentences[i].length + 1).split("");
-      }
-    } else inputletter = textValue.split("");
-    let contentLetter = content.split("");
-    console.log(contentLetter);
-    return (
-      <div>
-        {contentLetter.map((value, letterIndex) => {
-          if (wordIndex != 0 && value == " ") {
-            return <span key={letterIndex}>&nbsp;</span>;
-          }
-          //TODO: sentence 가 지나면 기록을 남기는 작업
-          if (sentenceIndex < sentenceCurrent) {
-            return (
-              <span key={letterIndex} className="text-white">
-                {value}
-              </span>
-            );
-          }
+    if (wordIndex != 0 && content == " ") {
+      return <span>&nbsp;</span>;
+    }
 
-          return sentenceCurrent == sentenceIndex && inputletter[wordIndex] ? (
-            inputletter[wordIndex] == content ? (
-              <span key={letterIndex} className="text-white">
-                {value}
-              </span>
-            ) : (
-              <span key={letterIndex} className="text-red-600">
-                {inputletter[wordIndex]}
-              </span>
-            )
-          ) : (
-            <span key={letterIndex} className="text-[#818181]">
-              {value}
-            </span>
-          );
-        })}
-      </div>
+    let testInput = textValue.split("\n");
+    let testInputLetter = testInput[sentenceCurrent].split("");
+    console.log(testInputLetter, content);
+    return sentenceCurrent == sentenceIndex && testInputLetter[wordIndex] ? (
+      testInputLetter[wordIndex] == content ? (
+        <span className="text-white">{content}</span>
+      ) : testInputLetter[wordIndex] == " " ? (
+        <span className="text-red-600">{content}</span>
+      ) : (
+        <span className="text-red-600">{testInputLetter[wordIndex]}</span>
+      )
+    ) : (
+      <span className="text-[#818181]">{content}</span>
     );
   };
+
   const WordGenerator = ({ content, sentenceIndex }: Word) => {
     //Split into letters
     let letters = content.split("");
@@ -153,7 +120,7 @@ export default function Home() {
           className="absolute top-[8rem] left-[8rem] bg-transparent text-transparent w-[36rem] h-[13rem] focus:outline-none p-10 resize-none caret-white tracking-[0.06rem]"
           onChange={handleTextArea}
           value={textValue}
-          onKeyUp={handleKeyDown}
+          // onKeyUp={handleKeyDown}
         ></textarea>
       </div>
       <hr className=" w-[100%] h-[0.75px] bg-white"></hr>
