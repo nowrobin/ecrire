@@ -23,12 +23,13 @@ export default function Home() {
 
   const [textValue, setTextValue] = useState(""); //for the print text
   const [inputValue, setInputValue] = useState<string[]>([]);
+  const [inputCollection, setInputCollection] = useState<any[]>([]);
   const [compare, setCompare] = useState(false);
   const quote = {
     title: "눈물을 마시는 새",
     author: "이영도",
     content:
-      "아름다운 나의 벗이여, 내 형제여. 살았을 적 언제나 내 곁에,\n죽은 후엔 영원히 내 속에 남은 이여 다시 돌아온 봄이건만,\n꽃잎 맞으며 그대와 거닐 수 없으니 봄은 왔으되 결코 봄이 아니구나.",
+      "아름다운 나의 벗이여, 내 형제여. 살았을 적 언제나 내 곁에,\n 죽은 후엔 영원히 내 속에 남은 이여 다시 돌아온 봄이건만,\n 꽃잎 맞으며 그대와 거닐 수 없으니 봄은 왔으되 결코 봄이 아니구나.",
   };
 
   const sentences = quote.content.split("\n");
@@ -36,36 +37,24 @@ export default function Home() {
   const contents = quote.content.split(" ");
 
   const handleTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    let newLine = "";
     let targetValue = e.currentTarget.value;
-    let targetLegnth = targetValue.length;
+    let targetLength = targetValue.length;
     if (sentenceCurrent !== 0) {
-      targetLegnth += sentences[sentenceCurrent].length;
-      if (targetLegnth == sentences[sentenceCurrent].length) {
+      for (let i = 0; i < sentenceCurrent; i++) {
+        targetLength = targetValue.substring(sentences[i].length + 1).length;
+      }
+      if (targetLength == sentences[sentenceCurrent].length) {
         e.currentTarget.value += "\n";
+        setInputCollection((prev) => [...prev, e.currentTarget.value]);
         setSentenceCurrent((prev) => ++prev);
       }
-    } else if (targetLegnth == sentences[sentenceCurrent].length) {
+    } else if (targetLength == sentences[sentenceCurrent].length) {
       e.currentTarget.value += "\n";
       setSentenceCurrent((prev) => ++prev);
     }
-    // //Compare the length
-    // if (targetLegnth == sentences[sentenceCurrent].length) {
-    //   setLetterCurrent(0);
-    //   setSentenceCurrent((prev: number) => ++prev);
-    //   setTextValue("");
-    // }
-    //or
-    // if (targetValue == sentences[sentenceCurrent]) {
-    //   setLetterCurrent(0);
-    //   setSentenceCurrent((prev: number) => ++prev);
-    //   setTextValue("");
-    // } else {
 
     setLetterCurrent(targetValue.length);
     setTextValue(e.currentTarget.value);
-    //}
-    //if there is newline than clear it out
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -82,35 +71,37 @@ export default function Home() {
     sentenceIndex,
     letters,
   }: Letter) => {
-    //Quote in letters
-    //User Input Value in lettters
-    let inputletter = textValue.split("");
+    let inputletter: string[] = [""];
+    if (sentenceCurrent != 0) {
+      for (let i = 0; i < sentenceCurrent; i++) {
+        inputletter = textValue.substring(sentences[i].length + 1).split("");
+      }
+    } else inputletter = textValue.split("");
     let contentLetter = content.split("");
-    console.log(inputletter);
-    console.log(content, wordIndex);
-    //.filter((value) => value != " ");
-
-    // if(inputletter[wordIndex] && inputletter[wordIndex])
+    console.log(contentLetter);
     return (
       <div>
         {contentLetter.map((value, letterIndex) => {
-          if (value == " ") {
+          if (wordIndex != 0 && value == " ") {
             return <span key={letterIndex}>&nbsp;</span>;
           }
-          return sentenceCurrent == sentenceIndex ? (
-            inputletter[wordIndex] ? (
-              inputletter[wordIndex] == content ? (
-                <span key={letterIndex} className="text-white">
-                  {value}
-                </span>
-              ) : (
-                <span key={letterIndex} className="text-red-600">
-                  {inputletter[wordIndex]}
-                </span>
-              )
-            ) : (
-              <span key={letterIndex} className="text-[#818181]">
+          //TODO: sentence 가 지나면 기록을 남기는 작업
+          if (sentenceIndex < sentenceCurrent) {
+            return (
+              <span key={letterIndex} className="text-white">
                 {value}
+              </span>
+            );
+          }
+
+          return sentenceCurrent == sentenceIndex && inputletter[wordIndex] ? (
+            inputletter[wordIndex] == content ? (
+              <span key={letterIndex} className="text-white">
+                {value}
+              </span>
+            ) : (
+              <span key={letterIndex} className="text-red-600">
+                {inputletter[wordIndex]}
               </span>
             )
           ) : (
