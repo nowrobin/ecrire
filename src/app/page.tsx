@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface Word {
   content: string;
@@ -19,7 +19,7 @@ export default function Home() {
   const [sentenceCurrent, setSentenceCurrent] = useState(0); //sentence Current position
   const [textValue, setTextValue] = useState(""); //for the print text
   // const [inputValue, setInputValue] = useState<string[]>([]);
-  // const [inputCollection, setInputCollection] = useState<any[]>([]);
+  const [inputCollection, setInputCollection] = useState<string[]>([]);
   const quote = {
     title: "눈물을 마시는 새",
     author: "이영도",
@@ -36,6 +36,8 @@ export default function Home() {
     let targetLength = targetValue[sentenceCurrent].length;
 
     if (targetLength == sentences[sentenceCurrent].length) {
+      console.log(e.currentTarget.value);
+      setInputCollection((prev) => [...prev, targetValue[sentenceCurrent]]);
       e.currentTarget.value += "\n";
       if (sentenceCurrent + 1 >= sentences.length) {
         alert("The End");
@@ -53,6 +55,7 @@ export default function Home() {
   //     // setInputValue((prev) => [...prev, textValue.trim()]);
   //   }
   // };
+  console.log(inputCollection);
 
   const LetterGenerator = ({
     wordIndex,
@@ -66,7 +69,14 @@ export default function Home() {
 
     let testInput = textValue.split("\n");
     let testInputLetter = testInput[sentenceCurrent].split("");
-    console.log(testInputLetter, content);
+    if (sentenceIndex < sentenceCurrent) {
+      let previousInputValue = inputCollection[sentenceIndex].split("");
+      return previousInputValue[wordIndex] == content ? (
+        <span className="text-white">{content}</span>
+      ) : (
+        <span className="text-red-800">{previousInputValue[wordIndex]}</span>
+      );
+    }
     return sentenceCurrent == sentenceIndex && testInputLetter[wordIndex] ? (
       testInputLetter[wordIndex] == content ? (
         <span className="text-white">{content}</span>
