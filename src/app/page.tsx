@@ -53,9 +53,9 @@ export default function Home() {
     if (key == " " || key == "Spacebar") {
     }
     if (key == "Backspace") {
-      if (textValue.length == 0) {
+      if (textValue == "") {
         e.preventDefault();
-        alert("End of input");
+        return;
       }
       //if the whole length is smaller
       let inputSentence = textValue.split("\n");
@@ -90,25 +90,21 @@ export default function Home() {
         <span className="text-red-800">{previousInputValue[wordIndex]}</span>
       );
     }
-    if (textValue == "" || textValue == null) {
-      console.log("a");
-      return <span className="text-[#818181]">{content}</span>;
-    } else {
-      let testInput = textValue.split("\n");
-      let testInputLetter = testInput[sentenceCurrent].split("");
 
-      return sentenceCurrent == sentenceIndex && testInputLetter[wordIndex] ? (
-        testInputLetter[wordIndex] == content ? (
-          <span className="text-white">{content}</span>
-        ) : testInputLetter[wordIndex] == " " ? (
-          <span className="text-red-600">{content}</span>
-        ) : (
-          <span className="text-red-600">{testInputLetter[wordIndex]}</span>
-        )
+    let testInput = textValue.split("\n");
+    let testInputLetter = testInput[sentenceCurrent].split("");
+
+    return sentenceCurrent == sentenceIndex && testInputLetter[wordIndex] ? (
+      testInputLetter[wordIndex] == content ? (
+        <span className="text-white">{content}</span>
+      ) : testInputLetter[wordIndex] == " " ? (
+        <span className="text-red-600">{content}</span>
       ) : (
-        <span className="text-[#818181]">{content}</span>
-      );
-    }
+        <span className="text-red-600">{testInputLetter[wordIndex]}</span>
+      )
+    ) : (
+      <span className="text-[#818181]">{content}</span>
+    );
   };
 
   const WordGenerator = ({ content, sentenceIndex }: Word) => {
