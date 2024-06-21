@@ -48,13 +48,15 @@ export default function Home() {
     setTextValue(e.currentTarget.value);
   };
 
-  // const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-  //   const key = e.key;
-  //   if (key == " " || key == "Spacebar") {
-  //     //setWordCurrent((prev) => ++prev);
-  //     // setInputValue((prev) => [...prev, textValue.trim()]);
-  //   }
-  // };
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    const key = e.key;
+    console.log(key);
+    if (key == " " || key == "Spacebar") {
+    }
+    if (key == "Backspace") {
+    }
+  };
+
   console.log(inputCollection);
 
   const LetterGenerator = ({
@@ -130,7 +132,7 @@ export default function Home() {
           className="absolute top-[8rem] left-[8rem] bg-transparent text-transparent w-[36rem] h-[13rem] focus:outline-none p-10 resize-none caret-white tracking-[0.06rem]"
           onChange={handleTextArea}
           value={textValue}
-          // onKeyUp={handleKeyDown}
+          onKeyDown={handleKeyDown}
         ></textarea>
       </div>
       <hr className=" w-[100%] h-[0.75px] bg-white"></hr>
