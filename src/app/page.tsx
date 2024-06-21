@@ -33,10 +33,9 @@ export default function Home() {
 
   const handleTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     let targetValue = e.currentTarget.value.split("\n");
+    console.log(targetValue[sentenceCurrent]);
     let targetLength = targetValue[sentenceCurrent].length;
-
     if (targetLength == sentences[sentenceCurrent].length) {
-      console.log(e.currentTarget.value);
       setInputCollection((prev) => [...prev, targetValue[sentenceCurrent]]);
       e.currentTarget.value += "\n";
       if (sentenceCurrent + 1 >= sentences.length) {
@@ -50,14 +49,28 @@ export default function Home() {
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     const key = e.key;
-    console.log(key);
+    // console.log(key);
     if (key == " " || key == "Spacebar") {
     }
     if (key == "Backspace") {
+      if (textValue.length == 0) {
+        e.preventDefault();
+        alert("End of input");
+      }
+      //if the whole length is smaller
+      let inputSentence = textValue.split("\n");
+      if (inputSentence[sentenceCurrent] == "") {
+        setSentenceCurrent((prev) => (prev = prev - 1));
+        setTextValue((prev) => {
+          let modifiedSentence = prev.split("\n");
+          return modifiedSentence[sentenceCurrent - 1];
+        });
+      }
+    }
+    if (key == "Enter") {
+      // setSentenceCurrent((prev) => ++prev);
     }
   };
-
-  console.log(inputCollection);
 
   const LetterGenerator = ({
     wordIndex,
@@ -69,8 +82,6 @@ export default function Home() {
       return <span>&nbsp;</span>;
     }
 
-    let testInput = textValue.split("\n");
-    let testInputLetter = testInput[sentenceCurrent].split("");
     if (sentenceIndex < sentenceCurrent) {
       let previousInputValue = inputCollection[sentenceIndex].split("");
       return previousInputValue[wordIndex] == content ? (
@@ -79,17 +90,25 @@ export default function Home() {
         <span className="text-red-800">{previousInputValue[wordIndex]}</span>
       );
     }
-    return sentenceCurrent == sentenceIndex && testInputLetter[wordIndex] ? (
-      testInputLetter[wordIndex] == content ? (
-        <span className="text-white">{content}</span>
-      ) : testInputLetter[wordIndex] == " " ? (
-        <span className="text-red-600">{content}</span>
+    if (textValue == "" || textValue == null) {
+      console.log("a");
+      return <span className="text-[#818181]">{content}</span>;
+    } else {
+      let testInput = textValue.split("\n");
+      let testInputLetter = testInput[sentenceCurrent].split("");
+
+      return sentenceCurrent == sentenceIndex && testInputLetter[wordIndex] ? (
+        testInputLetter[wordIndex] == content ? (
+          <span className="text-white">{content}</span>
+        ) : testInputLetter[wordIndex] == " " ? (
+          <span className="text-red-600">{content}</span>
+        ) : (
+          <span className="text-red-600">{testInputLetter[wordIndex]}</span>
+        )
       ) : (
-        <span className="text-red-600">{testInputLetter[wordIndex]}</span>
-      )
-    ) : (
-      <span className="text-[#818181]">{content}</span>
-    );
+        <span className="text-[#818181]">{content}</span>
+      );
+    }
   };
 
   const WordGenerator = ({ content, sentenceIndex }: Word) => {
