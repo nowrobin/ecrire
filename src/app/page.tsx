@@ -13,12 +13,10 @@ interface Letter extends Word {
 }
 
 export default function Home() {
-  // const [wordCurrent, setWordCurrent] = useState(0); // word current
-  // const [letterCurrent, setLetterCurrent] = useState(0);
   //For sentence
   const [sentenceCurrent, setSentenceCurrent] = useState(0); //sentence Current position
   const [textValue, setTextValue] = useState(""); //for the print text
-  // const [inputValue, setInputValue] = useState<string[]>([]);
+  // let inputCollection: string[] = [];
   const [inputCollection, setInputCollection] = useState<string[]>([]);
   const quote = {
     title: "눈물을 마시는 새",
@@ -29,27 +27,33 @@ export default function Home() {
 
   const sentences = quote.content.split("\n");
 
-  // const contents = quote.content.split(" ");
-
   const handleTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     let targetValue = e.currentTarget.value.split("\n");
-    console.log(targetValue[sentenceCurrent]);
     let targetLength = targetValue[sentenceCurrent].length;
     if (targetLength == sentences[sentenceCurrent].length) {
-      setInputCollection((prev) => [...prev, targetValue[sentenceCurrent]]);
+      setInputCollection((prev: any) => {
+        //다음 index가 없거나, 처음 들어올때
+        if (prev[sentenceCurrent] == undefined || prev.length == 0) {
+          return [...prev, targetValue[sentenceCurrent]];
+        } else
+          return prev.map((value, index) => {
+            if (index == sentenceCurrent) {
+              return targetValue[sentenceCurrent];
+            }
+          });
+      });
       e.currentTarget.value += "\n";
       if (sentenceCurrent + 1 >= sentences.length) {
         alert("The End");
       }
       setSentenceCurrent((prev) => ++prev);
+      // setSentenceCurrent((prev) => ++prev);
     }
-    // setLetterCurrent(targetValue.length);
     setTextValue(e.currentTarget.value);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     const key = e.key;
-    // console.log(key);
     if (key == " " || key == "Spacebar") {
     }
     if (key == "Backspace") {
@@ -60,18 +64,18 @@ export default function Home() {
       //if the whole length is smaller
       let inputSentence = textValue.split("\n");
       if (inputSentence[sentenceCurrent] == "") {
-        setSentenceCurrent((prev) => (prev = prev - 1));
+        setSentenceCurrent((prev) => (prev -= 1));
         setTextValue((prev) => {
           let modifiedSentence = prev.split("\n");
+          console.log("modified " + modifiedSentence);
           return modifiedSentence[sentenceCurrent - 1];
         });
       }
     }
     if (key == "Enter") {
-      // setSentenceCurrent((prev) => ++prev);
     }
   };
-
+  console.log(sentenceCurrent, inputCollection);
   const LetterGenerator = ({
     wordIndex,
     content,
