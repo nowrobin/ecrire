@@ -57,25 +57,26 @@ export default function Home() {
     if (key == " " || key == "Spacebar") {
     }
     if (key == "Backspace") {
+      //Prevent From going over empty text area
       if (textValue == "") {
         e.preventDefault();
         return;
       }
       //if the whole length is smaller
       let inputSentence = textValue.split("\n");
+      //If current Sentence Have Empty string
+      //then Skip to the previous sentence
+      console.log("ㅁ" + inputSentence);
       if (inputSentence[sentenceCurrent] == "") {
-        setSentenceCurrent((prev) => (prev -= 1));
         setTextValue((prev) => {
-          let modifiedSentence = prev.split("\n");
-          console.log("modified " + modifiedSentence);
-          return modifiedSentence[sentenceCurrent - 1];
+          return prev.slice(0, -1);
         });
+        setSentenceCurrent((prev) => (prev -= 1));
       }
     }
     if (key == "Enter") {
     }
   };
-  console.log(sentenceCurrent, inputCollection);
   const LetterGenerator = ({
     wordIndex,
     content,
