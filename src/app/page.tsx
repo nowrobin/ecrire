@@ -31,23 +31,21 @@ export default function Home() {
     let targetValue = e.currentTarget.value.split("\n");
     let targetLength = targetValue[sentenceCurrent].length;
     if (targetLength == sentences[sentenceCurrent].length) {
-      setInputCollection((prev: any) => {
+      setInputCollection((prev: string[]) => {
         //다음 index가 없거나, 처음 들어올때
         if (prev[sentenceCurrent] == undefined || prev.length == 0) {
           return [...prev, targetValue[sentenceCurrent]];
-        } else
-          return prev.map((value, index) => {
-            if (index == sentenceCurrent) {
-              return targetValue[sentenceCurrent];
-            }
-          });
+        } else {
+          let newInputCollection: string[] = [...prev];
+          newInputCollection[sentenceCurrent] = targetValue[sentenceCurrent];
+          return newInputCollection;
+        }
       });
       e.currentTarget.value += "\n";
       if (sentenceCurrent + 1 >= sentences.length) {
         alert("The End");
       }
       setSentenceCurrent((prev) => ++prev);
-      // setSentenceCurrent((prev) => ++prev);
     }
     setTextValue(e.currentTarget.value);
   };
@@ -66,7 +64,6 @@ export default function Home() {
       let inputSentence = textValue.split("\n");
       //If current Sentence Have Empty string
       //then Skip to the previous sentence
-      console.log("ㅁ" + inputSentence);
       if (inputSentence[sentenceCurrent] == "") {
         setTextValue((prev) => {
           return prev.slice(0, -1);
@@ -75,6 +72,8 @@ export default function Home() {
       }
     }
     if (key == "Enter") {
+      e.preventDefault();
+      alert("You Cannot Skip the line");
     }
   };
   const LetterGenerator = ({
@@ -86,7 +85,6 @@ export default function Home() {
     if (wordIndex != 0 && content == " ") {
       return <span>&nbsp;</span>;
     }
-
     if (sentenceIndex < sentenceCurrent) {
       let previousInputValue = inputCollection[sentenceIndex].split("");
       return previousInputValue[wordIndex] == content ? (
@@ -132,7 +130,6 @@ export default function Home() {
       </div>
     );
   };
-
   return (
     <div className="flex flex-col items-start w-[50%] m-32">
       <div id="print" className="flex  w-[36rem] h-[13rem] gap-1  p-10">
