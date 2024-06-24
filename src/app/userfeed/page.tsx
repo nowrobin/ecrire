@@ -1,6 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
+import React, { useEffect, useState } from "react";
+import chevronUP from "../../../public/chevron-up.svg";
+import chevronDown from "../../../public/chevron-down.svg";
+import Image from "next/image";
 
 interface FeedBackDetail {
   upvote: number;
@@ -34,13 +38,41 @@ export default function UserFeedback() {
   const FeedBacks = ({ upvote, downvote, feedback }: FeedBackDetail) => {
     const votes = upvote - downvote;
     return (
-      <div className="flex flex-row">
+      <div className="flex flex-row text-black bg-white w-[20rem]">
         <div className="felx flex-col">
-          <button>u</button>
+          <button>
+            <Image src={chevronUP} alt="chev_UP" width={20} height={20} />
+          </button>
           <div>{votes}</div>
-          <button>d</button>
+          <button>
+            <Image src={chevronDown} alt="chev_DOWN" width={20} height={20} />
+          </button>
         </div>
         <div>{feedback}</div>
+      </div>
+    );
+  };
+  const FeedBackSkeleton = () => {
+    return (
+      <div className="flex flex-row w-[20rem] bg-white">
+        <div className="felx flex-col">
+          <Image
+            className="animate-bounce text-white"
+            src={chevronUP}
+            alt="chev_UP"
+            width={20}
+            height={20}
+          />
+          <div className=""></div>
+          <Image
+            className="animate-bounce"
+            src={chevronDown}
+            alt="chev_Down"
+            width={20}
+            height={20}
+          />
+        </div>
+        <div className=" animate-shimmer bg-gradient-custom bg-custom"></div>
       </div>
     );
   };
@@ -57,25 +89,34 @@ export default function UserFeedback() {
     }).then(() => setIsLoading(false));
   };
 
+  const handleKeyUP = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key == "Enter") {
+      handleCommentClick();
+    }
+  };
+
   return (
-    <div className="m-32">
-      <div className="flex flex-row gap-4">
+    <div className="m-32 w-[80%] bg-[#D9D9D9] p-10">
+      <div className="flex flex-row gap-4 h-[40px]">
         <input
           type="text"
-          className="w-[32rem] text-black"
+          className="w-[32rem] text-white bg-[#3A3636] rounded-lg pl-2 outli"
           placeholder="Feel Free to leave us a comment"
           onChange={handleOnChange}
+          onKeyUp={handleKeyUP}
         />
         <button
-          className="hover:bg-white hover:text-black "
+          className="hover:bg-white hover:text-black bg-[#3A3636] p-2 rounded-lg"
           onClick={handleCommentClick}
         >
           comment
         </button>
       </div>
-      <div className="flex flex-col gap-5">
+      <div className="mt-8 grid grid-cols-2 gap-4">
         {userFeed.map((value, index) => {
-          return (
+          return isLoading ? (
+            <div></div>
+          ) : (
             <FeedBacks
               key={index}
               upvote={value.upvote}
@@ -85,6 +126,7 @@ export default function UserFeedback() {
           );
         })}
       </div>
+      <FeedBackSkeleton></FeedBackSkeleton>
     </div>
   );
 }
