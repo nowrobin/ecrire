@@ -27,7 +27,7 @@ export async function PUT(req: NextRequest) {
       id: id,
     },
     data: {
-      upvote: upvote,
+      upvote: upvote + 1,
       downvote: downvote,
     },
   });
