@@ -4,7 +4,13 @@ import prisma from "@/app/lib/prisma";
 import { NextRequest } from "next/server";
 
 export async function GET() {
-  const posts = await prisma.post.findMany({});
+  const posts = await prisma.post.findMany({
+    orderBy: [
+      {
+        id: "asc",
+      },
+    ],
+  });
   return Response.json({ message: "success", data: posts }, { status: 200 });
 }
 
@@ -13,22 +19,28 @@ export async function POST(req: NextRequest) {
   const post = await prisma.post.create({
     data: {
       feedback: feedback,
-      upvote: 0,
-      downvote: 0,
     },
   });
   return Response.json({ message: "success", data: post }, { status: 200 });
 }
 
 export async function PUT(req: NextRequest) {
-  const { id, upvote, downvote } = await req.json();
+  const { id, upDown } = await req.json();
+  console.log(id, upDown);
+  const v =
+    upDown == "UP"
+      ? {
+          increment: 1,
+        }
+      : {
+          decrement: 1,
+        };
   const vote = await prisma.post.update({
     where: {
       id: id,
     },
     data: {
-      upvote: upvote + 1,
-      downvote: downvote,
+      vote: v,
     },
   });
   return Response.json({ message: "success", data: vote }, { status: 200 });

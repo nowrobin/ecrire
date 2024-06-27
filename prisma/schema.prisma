@@ -22,6 +22,5 @@ datasource db {
 model Post {
   id        Int      @id @default(autoincrement())
   feedback   String
-  upvote Int 
-  downvote Int
+  vote Int @default(0)
 }

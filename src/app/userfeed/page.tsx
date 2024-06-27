@@ -8,15 +8,14 @@ import Image from "next/image";
 
 interface FeedBackDetail {
   id: number;
-  upvote: number;
-  downvote: number;
+  vote: number;
   feedback: string;
 }
 
 export default function UserFeedback() {
   const [inputValue, setInputValue] = useState("");
   const [userFeed, setUserFeed] = useState<FeedBackDetail[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     fetch("/api/posts")
@@ -27,32 +26,35 @@ export default function UserFeedback() {
       });
   }, [isLoading]);
 
-  const mockFeed = [
-    { upvote: 1, downvote: 3, feedback: "디자인이 별로에요" },
-    { upvote: 1, downvote: 3, feedback: "디자인이 별로에요" },
-    { upvote: 1, downvote: 3, feedback: "디자인이 별로에요" },
-    { upvote: 1, downvote: 3, feedback: "디자인이 별로에요" },
-    { upvote: 1, downvote: 3, feedback: "디자인이 별로에요" },
-  ];
-
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.currentTarget.value);
   };
 
-  const FeedBacks = ({ upvote, downvote, feedback, id }: FeedBackDetail) => {
-    const votes = upvote - downvote;
+  const FeedBacks = ({ vote, feedback, id }: FeedBackDetail) => {
+    if (feedback.length >= 20) {
+      feedback = feedback.slice(0, 20) + "...";
+    }
     return (
-      <div className="flex flex-row h-[5rem] text-black bg-white w-[18rem] rounded-xl p-2">
-        <div className="flex flex-col h-[3rem]">
-          <button onClick={() => handleUpVote(id)}>
+      <div className="flex flex-row relative h-[5rem] text-black bg-white w-[18rem] rounded-xl p-2">
+        <div className="flex flex-col h-[3rem]  mt-2 justify-center items-center">
+          <button
+            className=" flex rounded-md bg-red-300"
+            onClick={() => {
+              handleVote(id, "UP");
+            }}
+          >
             <Image src={chevronUP} alt="chev_UP" width={20} height={20} />
           </button>
-          <div className="text-center text-[16px]">{votes}</div>
-          <button onClick={() => handleDownVote(id)}>
+
+          <div className={"text-center text-[16px]"}>{vote}</div>
+          <button
+            className="bg-red-300 rounded-md"
+            onClick={() => handleVote(id, "DOWN")}
+          >
             <Image src={chevronDown} alt="chev_DOWN" width={20} height={20} />
           </button>
         </div>
-        <div className=" ml-[20px] text-center leading-[4rem]">{feedback}</div>
+        <div className=" ml-[20px] text-start leading-[4rem]">{feedback}</div>
       </div>
     );
   };
@@ -82,9 +84,9 @@ export default function UserFeedback() {
       </div>
     );
   };
-  const handleCommentClick = () => {
+  const handleCommentClick = async () => {
     setIsLoading(true);
-    const result = fetch("/api/posts", {
+    const result = await fetch("/api/posts", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -92,7 +94,10 @@ export default function UserFeedback() {
       body: JSON.stringify({
         feedback: inputValue,
       }),
-    }).then(() => setIsLoading(false));
+    });
+    if (result) {
+      setIsLoading(false);
+    }
   };
 
   const handleKeyUP = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -101,18 +106,20 @@ export default function UserFeedback() {
     }
   };
 
-  const handleUpVote = (id: number) => {
-    fetch("/api/posts", {
+  const handleVote = async (id: number, upDown: string) => {
+    let result = await fetch("/api/posts", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        upDown: upDown,
         id: id,
       }),
-    });
+    }).then((data) => data.json());
+    if (result) {
+    }
   };
-  const handleDownVote = (id: number) => {};
   return (
     <div className="m-32 w-[80%] bg-[#D9D9D9] p-10">
       <div className="flex flex-row gap-4 h-[40px]">
@@ -130,7 +137,7 @@ export default function UserFeedback() {
           comment
         </button>
       </div>
-      <div className="mt-8 grid sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-4">
+      <div className="mt-8 grid sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {isLoading ? (
           <>
             <FeedBackSkeleton></FeedBackSkeleton>
@@ -144,8 +151,7 @@ export default function UserFeedback() {
               <FeedBacks
                 id={value.id}
                 key={value.id}
-                upvote={value.upvote}
-                downvote={value.downvote}
+                vote={value.vote}
                 feedback={value.feedback}
               ></FeedBacks>
             );
