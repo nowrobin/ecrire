@@ -1,113 +1,160 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useState } from "react";
+
+interface Word {
+  content: string;
+  sentenceIndex: number;
+}
+
+interface Letter extends Word {
+  wordIndex: number;
+  letters: string[];
+}
 
 export default function Home() {
+  //For sentence
+  const [sentenceCurrent, setSentenceCurrent] = useState(0); //sentence Current position
+  const [textValue, setTextValue] = useState(""); //for the print text
+  // let inputCollection: string[] = [];
+  const [inputCollection, setInputCollection] = useState<string[]>([]);
+  const quote = {
+    title: "눈물을 마시는 새",
+    author: "이영도",
+    content:
+      "아름다운 나의 벗이여, 내 형제여. 살았을 적 언제나 내 곁에,\n죽은 후엔 영원히 내 속에 남은 이여 다시 돌아온 봄이건만,\n꽃잎 맞으며 그대와 거닐 수 없으니 봄은 왔으되 결코 봄이 아니구나.",
+  };
+
+  const sentences = quote.content.split("\n");
+
+  const handleTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    let targetValue = e.currentTarget.value.split("\n");
+    let targetLength = targetValue[sentenceCurrent].length;
+    if (targetLength == sentences[sentenceCurrent].length) {
+      setInputCollection((prev: string[]) => {
+        //다음 index가 없거나, 처음 들어올때
+        if (prev[sentenceCurrent] == undefined || prev.length == 0) {
+          return [...prev, targetValue[sentenceCurrent]];
+        } else {
+          let newInputCollection: string[] = [...prev];
+          newInputCollection[sentenceCurrent] = targetValue[sentenceCurrent];
+          return newInputCollection;
+        }
+      });
+      e.currentTarget.value += "\n";
+      if (sentenceCurrent + 1 >= sentences.length) {
+        alert("The End");
+      }
+      setSentenceCurrent((prev) => ++prev);
+    }
+    setTextValue(e.currentTarget.value);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    const key = e.key;
+    if (key == " " || key == "Spacebar") {
+    }
+    if (key == "Backspace") {
+      //Prevent From going over empty text area
+      if (textValue == "") {
+        e.preventDefault();
+        return;
+      }
+      //if the whole length is smaller
+      let inputSentence = textValue.split("\n");
+      //If current Sentence Have Empty string
+      //then Skip to the previous sentence
+      if (inputSentence[sentenceCurrent] == "") {
+        setTextValue((prev) => {
+          return prev.slice(0, -1);
+        });
+        setSentenceCurrent((prev) => (prev -= 1));
+      }
+    }
+    if (key == "Enter") {
+      e.preventDefault();
+      alert("You Cannot Skip the line");
+    }
+  };
+  const LetterGenerator = ({
+    wordIndex,
+    content,
+    sentenceIndex,
+    letters,
+  }: Letter) => {
+    if (wordIndex != 0 && content == " ") {
+      return <span>&nbsp;</span>;
+    }
+    if (sentenceIndex < sentenceCurrent) {
+      let previousInputValue = inputCollection[sentenceIndex].split("");
+      return previousInputValue[wordIndex] == content ? (
+        <span className="text-white">{content}</span>
+      ) : (
+        <span className="text-red-800">{previousInputValue[wordIndex]}</span>
+      );
+    }
+
+    let testInput = textValue.split("\n");
+    let testInputLetter = testInput[sentenceCurrent].split("");
+
+    return sentenceCurrent == sentenceIndex && testInputLetter[wordIndex] ? (
+      testInputLetter[wordIndex] == content ? (
+        <span className="text-white">{content}</span>
+      ) : testInputLetter[wordIndex] == " " ? (
+        <span className="text-red-600">{content}</span>
+      ) : (
+        <span className="text-red-600">{testInputLetter[wordIndex]}</span>
+      )
+    ) : (
+      <span className="text-[#818181]">{content}</span>
+    );
+  };
+
+  const WordGenerator = ({ content, sentenceIndex }: Word) => {
+    //Split into letters
+    let letters = content.split("");
+    return (
+      <div className="flex flex-row gap-[0.06rem]">
+        {letters.map((value, index) => {
+          //Generate Each Letters
+          return (
+            <LetterGenerator
+              key={index}
+              wordIndex={index}
+              sentenceIndex={sentenceIndex}
+              content={value}
+              letters={letters}
+            ></LetterGenerator>
+          );
+        })}
+      </div>
+    );
+  };
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <div className="flex flex-col items-start w-[50%] m-32">
+      <div id="print" className="flex  w-[36rem] h-[13rem] gap-1  p-10">
+        <div className="flex flex-col">
+          {sentences.map((value, index) => {
+            return (
+              //Each Word generate
+              <WordGenerator
+                key={index}
+                content={value}
+                sentenceIndex={index}
+              ></WordGenerator>
+            );
+          })}
         </div>
+        <textarea
+          className="absolute top-[8rem] left-[8rem] bg-transparent text-transparent w-[36rem] h-[13rem] focus:outline-none p-10 resize-none caret-white tracking-[0.06rem]"
+          onChange={handleTextArea}
+          value={textValue}
+          onKeyDown={handleKeyDown}
+        ></textarea>
       </div>
-
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+      <hr className=" w-[100%] h-[0.75px] bg-white"></hr>
+      <div>{quote.author}</div>
+      <div>{quote.title}</div>
+    </div>
   );
 }
