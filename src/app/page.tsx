@@ -28,14 +28,8 @@ export default function Home() {
   const [inputCollection, setInputCollection] = useState<string[]>([]);
   const [quoteNumber, setQuoteNumber] = useState<number>(0);
   const [quote, setQuote] = useState<QUOTE>(quotes[0]);
-
-  // {
-  //   title: "눈물을 마시는 새",
-  //   author: "이영도",
-  //   content:
-  //     "아름다운 나의 벗이여, 내 형제여. 살았을 적 언제나 내 곁에,\n죽은 후엔 영원히 내 속에 남은 이여 다시 돌아온 봄이건만,\n꽃잎 맞으며 그대와 거닐 수 없으니 봄은 왔으되 결코 봄이 아니구나.",
-  // };
   useEffect(() => {
+    setTextValue("");
     setQuote(quotes[quoteNumber]);
   }, [quoteNumber]);
 
@@ -46,7 +40,6 @@ export default function Home() {
     let targetLength = targetValue[sentenceCurrent].length;
     if (targetLength == sentences[sentenceCurrent].length) {
       setInputCollection((prev: string[]) => {
-        //다음 index가 없거나, 처음 들어올때
         if (prev[sentenceCurrent] == undefined || prev.length == 0) {
           return [...prev, targetValue[sentenceCurrent]];
         } else {
@@ -149,7 +142,6 @@ export default function Home() {
     if (quoteNumber + 1 >= quotes.length) {
       setQuoteNumber(0);
     } else setQuoteNumber((prev) => ++prev);
-
     setQuote(quotes[quoteNumber]);
   };
   console.log(quotes.length);
@@ -183,7 +175,7 @@ export default function Home() {
           onKeyDown={handleKeyDown}
         ></textarea>
       </div>
-      <hr className=" w-[100%] h-[0.75px] bg-white"></hr>
+      <hr className=" w-[150%] h-[0.75px] bg-white"></hr>
       <div className="flex flex-row gap-4 mt-2 ml-2">
         <button onClick={handlePrevClick}>
           <Image src={chevLeft} alt="chevLeft" width={20} />
