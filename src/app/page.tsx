@@ -1,6 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { quotes } from "@/app/quotes";
+import Image from "next/image";
+import chevLeft from "../../public/chevron-left.svg";
+import chevRight from "../../public/chevron-right.svg";
+import Link from "next/link";
 
 interface Word {
   content: string;
@@ -11,19 +16,28 @@ interface Letter extends Word {
   wordIndex: number;
   letters: string[];
 }
+type QUOTE = {
+  title: string;
+  author: string;
+  content: string;
+};
 
 export default function Home() {
-  //For sentence
   const [sentenceCurrent, setSentenceCurrent] = useState(0); //sentence Current position
   const [textValue, setTextValue] = useState(""); //for the print text
-  // let inputCollection: string[] = [];
   const [inputCollection, setInputCollection] = useState<string[]>([]);
-  const quote = {
-    title: "눈물을 마시는 새",
-    author: "이영도",
-    content:
-      "아름다운 나의 벗이여, 내 형제여. 살았을 적 언제나 내 곁에,\n죽은 후엔 영원히 내 속에 남은 이여 다시 돌아온 봄이건만,\n꽃잎 맞으며 그대와 거닐 수 없으니 봄은 왔으되 결코 봄이 아니구나.",
-  };
+  const [quoteNumber, setQuoteNumber] = useState<number>(0);
+  const [quote, setQuote] = useState<QUOTE>(quotes[0]);
+
+  // {
+  //   title: "눈물을 마시는 새",
+  //   author: "이영도",
+  //   content:
+  //     "아름다운 나의 벗이여, 내 형제여. 살았을 적 언제나 내 곁에,\n죽은 후엔 영원히 내 속에 남은 이여 다시 돌아온 봄이건만,\n꽃잎 맞으며 그대와 거닐 수 없으니 봄은 왔으되 결코 봄이 아니구나.",
+  // };
+  useEffect(() => {
+    setQuote(quotes[quoteNumber]);
+  }, [quoteNumber]);
 
   const sentences = quote.content.split("\n");
 
@@ -93,7 +107,6 @@ export default function Home() {
         <span className="text-red-800">{previousInputValue[wordIndex]}</span>
       );
     }
-
     let testInput = textValue.split("\n");
     let testInputLetter = testInput[sentenceCurrent].split("");
 
@@ -130,6 +143,24 @@ export default function Home() {
       </div>
     );
   };
+
+  const handleNextClick = () => {
+    console.log("clicked");
+    if (quoteNumber + 1 >= quotes.length) {
+      setQuoteNumber(0);
+    } else setQuoteNumber((prev) => ++prev);
+
+    setQuote(quotes[quoteNumber]);
+  };
+  console.log(quotes.length);
+  const handlePrevClick = () => {
+    console.log("clicked");
+    if (quoteNumber <= 0) {
+      setQuoteNumber(quotes.length - 1);
+    } else setQuoteNumber((prev) => --prev);
+    setQuote(quotes[quoteNumber]);
+  };
+
   return (
     <div className="flex flex-col items-start w-[50%] m-32">
       <div id="print" className="flex  w-[36rem] h-[13rem] gap-1  p-10">
@@ -153,8 +184,21 @@ export default function Home() {
         ></textarea>
       </div>
       <hr className=" w-[100%] h-[0.75px] bg-white"></hr>
-      <div>{quote.author}</div>
-      <div>{quote.title}</div>
+      <div className="flex flex-row gap-4 mt-2 ml-2">
+        <button onClick={handlePrevClick}>
+          <Image src={chevLeft} alt="chevLeft" width={20} />
+        </button>
+        <div className="flex flex-col ">
+          <div className=" h-[20px]">{"저자 :  " + quote.author}</div>
+          <div className=" h-[20px]">{"제목 :  " + quote.title}</div>
+        </div>
+        <button className="" onClick={handleNextClick}>
+          <Image src={chevRight} alt="chevLeft" width={20} />
+        </button>
+        <div className="ml-12 mt-4 text-white">
+          <Link href={"/userfeed"}>Leave Us a feedback===</Link>
+        </div>
+      </div>
     </div>
   );
 }
