@@ -107,7 +107,6 @@ export default function Home() {
         <span className="text-red-800">{previousInputValue[wordIndex]}</span>
       );
     }
-
     let testInput = textValue.split("\n");
     let testInputLetter = testInput[sentenceCurrent].split("");
 
