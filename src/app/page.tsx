@@ -1,5 +1,6 @@
 "use client";
 
+import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
 interface Word {
@@ -13,6 +14,7 @@ interface Letter extends Word {
 }
 
 export default function Home() {
+  //Get Session Info
   //For sentence
   const [sentenceCurrent, setSentenceCurrent] = useState(0); //sentence Current position
   const [textValue, setTextValue] = useState(""); //for the print text
