@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 
 export default function Header() {
@@ -10,7 +10,9 @@ export default function Header() {
     <div className="absolute flex flex-row gap-10 right-[32rem]">
       <div>Main</div>
       {session ? (
-        <div></div>
+        <div>
+          <button onClick={() => signOut()}>Log out</button>
+        </div>
       ) : (
         <div>
           <Link href={"/login"}>Login</Link>

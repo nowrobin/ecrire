@@ -7,20 +7,51 @@
 generator client {
   provider = "prisma-client-js"
 }
-
-// datasource db {
-//   provider = "postgresql"
-//   url      = env("DATABASE_URL")
-// }
-
 datasource db {
   provider = "postgresql"
-  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
-  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+  url=env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
-model Post {
+
+  // url = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  // directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+model FeedBack {
   id        Int      @id @default(autoincrement())
   feedback   String
   vote Int @default(0)
+}
+
+enum Provider{
+  GOOGLE
+  EMAIL
+  KAKAO
+}
+model User {
+  id Int  @id @default(autoincrement())
+  username String
+  provider Provider
+  email String? @unique
+  profile_Image String? @unique
+  createdAt DateTime @default(now())
+  access_token String?
+  refresh_token String?
+  upLoaded_Posts Quote[] @relation("Upload")
+  liked_Posts Quote[] @relation("Completed")
+  completedPosts Quote[]  @relation("Liked")
+}
+
+model Quote{
+  id Int @id
+  upload_User User @relation("Upload",fields: [upload_userId], references: [id])
+  completed_User User  @relation("Completed",fields: [completed_UserId], references: [id])
+  liked_User User  @relation("Liked",fields: [liked_userId], references: [id])
+  upload_userId Int
+  completed_UserId Int
+  liked_userId Int
+  author String
+  content String
+  createdAt DateTime @default(now())
+  private Boolean
+  view Int @default(0)
 }
