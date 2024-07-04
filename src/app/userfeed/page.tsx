@@ -31,9 +31,6 @@ export default function UserFeedback() {
   };
 
   const FeedBacks = ({ vote, feedback, id }: FeedBackDetail) => {
-    // if (feedback.length >= 20) {
-    //   feedback = feedback.slice(0, 20) + "...";
-    // }
     return (
       <div className="flex flex-row relative h-[5rem] text-black bg-white w-[18rem] rounded-xl p-2">
         <div className="flex flex-col h-[3rem]  mt-2 justify-center items-center">
