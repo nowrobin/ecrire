@@ -18,10 +18,9 @@ const config: Config = {
           "100%": { backgroundPosition: "-200%" },
         },
         blinker: {
-          "0%": {
-            border: "red-800 solid bottom-1px 	--tw-border-opacity-0",
-          },
-          "100%": { border: "white solid bottom-1px" },
+          "0%": { opacity: "100" },
+          "50%": { opacity: "0" },
+          "100%": { opacity: "100" },
         },
       },
       backgroundSize: {

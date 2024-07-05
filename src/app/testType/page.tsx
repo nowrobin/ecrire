@@ -25,12 +25,15 @@ type QUOTE = {
 export default function Home() {
   const [sentenceCurrent, setSentenceCurrent] = useState(0); //sentence Current position
   const [textValue, setTextValue] = useState(""); //for the print text
-  const [inputCollection, setInputCollection] = useState<string[]>([]);
+
   const [quoteNumber, setQuoteNumber] = useState<number>(0);
   const [quote, setQuote] = useState<QUOTE>(quotes[0]);
+  const [letterIndex, setLetterIndex] = useState(0);
   useEffect(() => {
     setQuote(quotes[quoteNumber]);
   }, [quoteNumber]);
+
+  //Max legnth should be 45 but consider the space
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -40,16 +43,16 @@ export default function Home() {
     let targetValue = e.currentTarget.value.split("\n");
     let targetLength = targetValue[sentenceCurrent].length;
     if (targetLength == sentences[sentenceCurrent].length) {
-      setInputCollection((prev: string[]) => {
-        //다음 index가 없거나, 처음 들어올때
-        if (prev[sentenceCurrent] == undefined || prev.length == 0) {
-          return [...prev, targetValue[sentenceCurrent]];
-        } else {
-          let newInputCollection: string[] = [...prev];
-          newInputCollection[sentenceCurrent] = targetValue[sentenceCurrent];
-          return newInputCollection;
-        }
-      });
+      // setInputCollection((prev: string[]) => {
+      //   //다음 index가 없거나, 처음 들어올때
+      //   if (prev[sentenceCurrent] == undefined || prev.length == 0) {
+      //     return [...prev, targetValue[sentenceCurrent]];
+      //   } else {
+      //     let newInputCollection: string[] = [...prev];
+      //     newInputCollection[sentenceCurrent] = targetValue[sentenceCurrent];
+      //     return newInputCollection;
+      //   }
+      // });
       e.currentTarget.value += "\n";
       if (sentenceCurrent + 1 >= sentences.length) {
         alert("The End");
@@ -57,6 +60,7 @@ export default function Home() {
       setSentenceCurrent((prev) => ++prev);
     }
     setTextValue(e.currentTarget.value);
+    setLetterIndex(e.currentTarget.value.length);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -95,42 +99,28 @@ export default function Home() {
     if (wordIndex != 0 && content == " ") {
       return <span>&nbsp;</span>;
     }
-
+    let testInput = textValue.split("");
     return (
-      <span className="text-white animate-blink border-solid border-b-[0.5px] border-white">
-        {content}
+      <span className="flex flex-col">
+        {testInput[wordIndex] && sentenceIndex == sentenceCurrent ? (
+          <span className="flex flex-col text-white text-center">
+            {testInput[wordIndex]}
+          </span>
+        ) : (
+          <span className="text-[#818181] text-center">{content}</span>
+        )}
+        {letterIndex == wordIndex && sentenceIndex == sentenceCurrent && (
+          <span className=" bg-white animate-blink h-[0.1px]"></span>
+        )}
       </span>
     );
-
-    // if (sentenceIndex < sentenceCurrent) {
-    //   let previousInputValue = inputCollection[sentenceIndex].split("");
-    //   return previousInputValue[wordIndex] == content ? (
-    //     <span className="text-white">{content}</span>
-    //   ) : (
-    //     <span className="text-red-800">{previousInputValue[wordIndex]}</span>
-    //   );
-    // }
-    // let testInput = textValue.split("\n");
-    // let testInputLetter = testInput[sentenceCurrent].split("");
-
-    // return sentenceCurrent == sentenceIndex && testInputLetter[wordIndex] ? (
-    //   testInputLetter[wordIndex] == content ? (
-    //     <span className="text-white">{content}</span>
-    //   ) : testInputLetter[wordIndex] == " " ? (
-    //     <span className="text-red-600">{content}</span>
-    //   ) : (
-    //     <span className="text-red-600">{testInputLetter[wordIndex]}</span>
-    //   )
-    // ) : (
-    //   <span className="text-[#818181]">{content}</span>
-    // );
   };
 
   const WordGenerator = ({ content, sentenceIndex }: Word) => {
     //Split into letters
     let letters = content.split("");
     return (
-      <div className="flex flex-row gap-[0.06rem]">
+      <div className="flex flex-wrap justify-start items-start gap-[0.06rem]">
         {letters.map((value, index) => {
           //Generate Each Letters
           return (
@@ -173,20 +163,15 @@ export default function Home() {
         onClick={handlePrintClick}
         className="flex  w-[36rem] h-[13rem] gap-1  p-10"
       >
-        <div className="flex flex-col">
-          {sentences.map((value, index) => {
-            return (
-              //Each Word generate
-              <WordGenerator
-                key={index}
-                content={value}
-                sentenceIndex={index}
-              ></WordGenerator>
-            );
-          })}
+        <div className="flex flex-wrap">
+          <WordGenerator
+            key={0}
+            content={quote.content}
+            sentenceIndex={0}
+          ></WordGenerator>
         </div>
         <textarea
-          className="absolute -z-10 bg-transparent text-transparent focus:bg-red-100 resize-none  caret-transparent"
+          className="absolute -z-10 bg-transparent text-transparent outline-none resize-none  caret-transparent"
           onChange={handleTextArea}
           value={textValue}
           ref={textAreaRef}
@@ -199,8 +184,14 @@ export default function Home() {
           <Image src={chevLeft} alt="chevLeft" width={20} />
         </button>
         <div className="flex flex-col ">
-          <div className=" h-[20px]">{"저자 :  " + quote.author}</div>
-          <div className=" h-[20px]">{"제목 :  " + quote.title}</div>
+          <div className="flex flex-wrap">
+            <div className=" h-[20px]">저자 :</div>
+            <div>{quote.author}</div>
+          </div>
+          <div className="flex flex-wrap">
+            <div className=" h-[20px]">제목 :</div>
+            <div>{quote.title}</div>
+          </div>
         </div>
         <button className="" onClick={handleNextClick}>
           <Image src={chevRight} alt="chevLeft" width={20} />
