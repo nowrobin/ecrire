@@ -29,12 +29,6 @@ export default function Home() {
   const [quoteNumber, setQuoteNumber] = useState<number>(0);
   const [quote, setQuote] = useState<QUOTE>(quotes[0]);
 
-  // {
-  //   title: "눈물을 마시는 새",
-  //   author: "이영도",
-  //   content:
-  //     "아름다운 나의 벗이여, 내 형제여. 살았을 적 언제나 내 곁에,\n죽은 후엔 영원히 내 속에 남은 이여 다시 돌아온 봄이건만,\n꽃잎 맞으며 그대와 거닐 수 없으니 봄은 왔으되 결코 봄이 아니구나.",
-  // };
   useEffect(() => {
     setQuote(quotes[quoteNumber]);
   }, [quoteNumber]);

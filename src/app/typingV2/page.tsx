@@ -14,7 +14,6 @@ interface Word {
 
 interface Letter extends Word {
   wordIndex: number;
-  letters: string[];
 }
 type QUOTE = {
   title: string;
@@ -23,65 +22,37 @@ type QUOTE = {
 };
 
 export default function Home() {
-  const [sentenceCurrent, setSentenceCurrent] = useState(0); //sentence Current position
   const [textValue, setTextValue] = useState(""); //for the print text
-
   const [quoteNumber, setQuoteNumber] = useState<number>(0);
   const [quote, setQuote] = useState<QUOTE>(quotes[0]);
   const [letterIndex, setLetterIndex] = useState(0);
   useEffect(() => {
     setQuote(quotes[quoteNumber]);
   }, [quoteNumber]);
-
-  //Max legnth should be 45 but consider the space
+  // const quote = {
+  //   title: "작별하지 않는다",
+  //   author: "한강",
+  //   content: "상대의 가장 연한 부분을 베기 위해.",
+  // };
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
-  const sentences = quote.content.split("\n");
-
   const handleTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    let targetValue = e.currentTarget.value.split("\n");
-    let targetLength = targetValue[sentenceCurrent].length;
-    if (targetLength == sentences[sentenceCurrent].length) {
-      // setInputCollection((prev: string[]) => {
-      //   //다음 index가 없거나, 처음 들어올때
-      //   if (prev[sentenceCurrent] == undefined || prev.length == 0) {
-      //     return [...prev, targetValue[sentenceCurrent]];
-      //   } else {
-      //     let newInputCollection: string[] = [...prev];
-      //     newInputCollection[sentenceCurrent] = targetValue[sentenceCurrent];
-      //     return newInputCollection;
-      //   }
-      // });
-      e.currentTarget.value += "\n";
-      if (sentenceCurrent + 1 >= sentences.length) {
-        alert("The End");
-      }
-      setSentenceCurrent((prev) => ++prev);
-    }
     setTextValue(e.currentTarget.value);
     setLetterIndex(e.currentTarget.value.length);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     const key = e.key;
+    if (letterIndex == quote.content.length) {
+      alert("End");
+    }
     if (key == " " || key == "Spacebar") {
     }
     if (key == "Backspace") {
-      //Prevent From going over empty text area
       if (textValue == "") {
         e.preventDefault();
         return;
-      }
-      //if the whole length is smaller
-      let inputSentence = textValue.split("\n");
-      //If current Sentence Have Empty string
-      //then Skip to the previous sentence
-      if (inputSentence[sentenceCurrent] == "") {
-        setTextValue((prev) => {
-          return prev.slice(0, -1);
-        });
-        setSentenceCurrent((prev) => (prev -= 1));
       }
     }
     if (key == "Enter") {
@@ -90,26 +61,25 @@ export default function Home() {
     }
   };
 
-  const LetterGenerator = ({
-    wordIndex,
-    content,
-    sentenceIndex,
-    letters,
-  }: Letter) => {
+  const LetterGenerator = ({ wordIndex, content, sentenceIndex }: Letter) => {
     if (wordIndex != 0 && content == " ") {
       return <span>&nbsp;</span>;
     }
     let testInput = textValue.split("");
     return (
       <span className="flex flex-col">
-        {testInput[wordIndex] && sentenceIndex == sentenceCurrent ? (
-          <span className="flex flex-col text-white text-center">
-            {testInput[wordIndex]}
-          </span>
+        {testInput[wordIndex] ? (
+          testInput[wordIndex] != content && wordIndex !== letterIndex ? (
+            <span className="text-red-300 text-center">
+              {testInput[wordIndex]}
+            </span>
+          ) : (
+            <span className="text-white text-center">{content}</span>
+          )
         ) : (
           <span className="text-[#818181] text-center">{content}</span>
         )}
-        {letterIndex == wordIndex && sentenceIndex == sentenceCurrent && (
+        {letterIndex == wordIndex && (
           <span className=" bg-white animate-blink h-[0.1px]"></span>
         )}
       </span>
@@ -117,19 +87,16 @@ export default function Home() {
   };
 
   const WordGenerator = ({ content, sentenceIndex }: Word) => {
-    //Split into letters
     let letters = content.split("");
     return (
       <div className="flex flex-wrap justify-start items-start gap-[0.06rem]">
         {letters.map((value, index) => {
-          //Generate Each Letters
           return (
             <LetterGenerator
               key={index}
               wordIndex={index}
               sentenceIndex={sentenceIndex}
               content={value}
-              letters={letters}
             ></LetterGenerator>
           );
         })}
@@ -176,6 +143,7 @@ export default function Home() {
           value={textValue}
           ref={textAreaRef}
           onKeyDown={handleKeyDown}
+          spellCheck="false"
         ></textarea>
       </div>
       <hr className=" w-[100%] h-[0.75px] bg-white"></hr>
