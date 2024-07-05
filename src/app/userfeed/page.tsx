@@ -14,7 +14,7 @@ interface FeedBackDetail {
 export default function UserFeedback() {
   const [inputValue, setInputValue] = useState("");
   const [userFeed, setUserFeed] = useState<FeedBackDetail[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetch("/api/posts")
@@ -119,7 +119,7 @@ export default function UserFeedback() {
     }
   };
   return (
-    <div className="m-32 w-[80%] bg-[#D9D9D9] p-10">
+    <div className="m-32 w-[80%] bg-[#D9D9D9] p-10 rounded-md">
       <div className="flex flex-row gap-4 h-[40px]">
         <input
           type="text"
@@ -138,6 +138,8 @@ export default function UserFeedback() {
       <div className="mt-8 grid sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {isLoading ? (
           <>
+            <FeedBackSkeleton></FeedBackSkeleton>
+            <FeedBackSkeleton></FeedBackSkeleton>
             <FeedBackSkeleton></FeedBackSkeleton>
             <FeedBackSkeleton></FeedBackSkeleton>
             <FeedBackSkeleton></FeedBackSkeleton>
