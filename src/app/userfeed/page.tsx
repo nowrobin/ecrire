@@ -1,7 +1,6 @@
 "use client";
 
-import dynamic from "next/dynamic";
-import React, { ButtonHTMLAttributes, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import chevronUP from "../../../public/chevron-up.svg";
 import chevronDown from "../../../public/chevron-down.svg";
 import Image from "next/image";
