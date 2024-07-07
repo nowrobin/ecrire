@@ -1,24 +1,20 @@
-"use client";
-
-import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
+import { createClient } from "@/app/utils/supabase/client";
 
-export default function Header() {
-  const { data: session, status } = useSession();
-  console.log(session);
-  return (
-    <div className="absolute flex flex-row gap-10 right-[32rem]">
-      <div>Main</div>
-      {session ? (
-        <div>
-          <button onClick={() => signOut()}>Log out</button>
-        </div>
-      ) : (
-        <div>
-          <Link href={"/login"}>Login</Link>
-          {/* <Link></Link> */}
-        </div>
-      )}
+import { getSession, signOut } from "@/app/login/actions";
+import { cookies } from "next/headers";
+
+export default async function Header() {
+  const supabase = createClient();
+  const { error, data } = await supabase.auth.getUser();
+  console.log(data);
+  return data ? (
+    <div>
+      <Link href="/login">logged In </Link>
+    </div>
+  ) : (
+    <div>
+      <Link href="/login">log </Link>
     </div>
   );
 }

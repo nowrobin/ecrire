@@ -44,8 +44,8 @@ model User {
 model Quote{
   id Int @id
   upload_User User @relation("Upload",fields: [upload_userId], references: [id])
-  completed_User User  @relation("Completed",fields: [completed_UserId], references: [id])
-  liked_User User  @relation("Liked",fields: [liked_userId], references: [id])
+  completed_User User[]  @relation("Completed")
+  liked_User User[]  @relation("Liked")
   upload_userId Int
   completed_UserId Int
   liked_userId Int
