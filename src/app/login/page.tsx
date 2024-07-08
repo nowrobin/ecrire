@@ -1,31 +1,26 @@
 "use client";
-
-import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
-
-// export default function Login() {
-//   const { data: session } = useSession();
-//   return session ? (
-//     <div>
-//       Already Logged In go back to <Link href={"/"}>Main Page</Link>
-//     </div>
-//   ) : (
-//     // <button onClick={() => signIn("google")}>Google LogIn</button>
-//     <div></div>
-//   );
-// }
-
-import { googleLogin, getSession, signOut } from "./actions";
+import { googleLogin, signOut } from "./actions";
 import { useEffect, useState } from "react";
 
 export default function LoginPage() {
+  const handleClick = async () => {
+    // if (localStorage.getItem("userName")) {
+    //   console.log("res", localStorage.getItem("userName"));
+    // } else {
+    //   const res = await googleLogin();
+    //   try {
+    //     localStorage.setItem("userName", res.data.user?.user_metadata.name);
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
+    // }
+    googleLogin();
+  };
   return (
     <div>
       <div>
-        <button
-          className="bg-red-100 w-[32rem] h-12"
-          onClick={() => googleLogin()}
-        >
+        <button className="bg-red-100 w-[32rem] h-12" onClick={handleClick}>
           Google Login
         </button>
         <button className="bg-red-100 w-[32rem] h-12" onClick={() => signOut()}>

@@ -1,5 +1,6 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/app/utils/supabase/server";
@@ -12,9 +13,12 @@ export async function googleLogin() {
       queryParams: {
         access_type: "offline",
         prompt: "consent",
+        redirectTo: `http://localhost:3000/auth/callback`,
       },
     },
   });
+
+  //Send to google Login URL
   if (data.url) {
     redirect(data.url); // use the redirect API for your server framework
   }
@@ -22,8 +26,9 @@ export async function googleLogin() {
     console.log(error);
     redirect("/error");
   }
-  revalidatePath("/", "layout");
-  redirect("/");
+  return supabase.auth.getUser();
+  // revalidatePath("/", "layout");
+  // redirect("/");
 }
 
 export async function signOut() {
@@ -35,10 +40,6 @@ export async function signOut() {
 
 export async function getSession() {
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  let metadata = user!.user_metadata;
-  console.log("metadata ", metadata);
-  return metadata;
+  const { data } = await supabase.auth.getUser();
+  return data;
 }

@@ -1,20 +1,46 @@
+"use client";
 import Link from "next/link";
-import { createClient } from "@/app/utils/supabase/client";
 
-import { getSession, signOut } from "@/app/login/actions";
+import { getSession } from "@/app/login/actions";
 import { cookies } from "next/headers";
+import { createClient } from "@/app/utils/supabase/client";
+import { useEffect, useState } from "react";
 
-export default async function Header() {
-  const supabase = createClient();
-  const { error, data } = await supabase.auth.getUser();
-  console.log(data);
-  return data ? (
+type USERINFO = {
+  email: string;
+  name: string;
+  picture: string;
+};
+
+export default function Header() {
+  const [name, setName] = useState("");
+  useEffect(() => {
+    async function getUserData() {
+      const supabase = createClient();
+      await supabase.auth.getUser().then((value) => {
+        if (value.data.user) {
+          if (localStorage.getItem("userName")) {
+            const user = localStorage.getItem("userName") as string;
+            setName(user);
+          } else
+            localStorage.setItem(
+              "userName",
+              value.data.user.user_metadata.name
+            );
+          console.log(value.data.user.user_metadata);
+        } else console.log(value);
+      });
+    }
+    getUserData();
+  }, []);
+
+  return (
     <div>
-      <Link href="/login">logged In </Link>
-    </div>
-  ) : (
-    <div>
-      <Link href="/login">log </Link>
+      {name != "" ? (
+        <div>{name} 환영합니다</div>
+      ) : (
+        <Link href="/login">Login</Link>
+      )}
     </div>
   );
 }
