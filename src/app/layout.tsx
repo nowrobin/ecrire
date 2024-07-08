@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/react";
 import Header from "./component/header/page";
-
-// import AuthContext from "./api/auth/providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Ecrire",
-  description: "Type your Quote of the day",
+  description: "Type quote of the day",
 };
 
 export default function RootLayout({
@@ -18,10 +17,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="kor">
+    <html lang="en">
       <body className={inter.className}>
         <Header></Header>
         {children}
+        <Analytics />
       </body>
     </html>
   );

@@ -10,11 +10,17 @@ const config: Config = {
     extend: {
       animation: {
         shimmer: "shimmer 1.5s infinite linear",
+        blink: "blinker 1.5s linear infinite",
       },
       keyframes: {
         shimmer: {
           "0%": { backgroundPosition: "200%" },
           "100%": { backgroundPosition: "-200%" },
+        },
+        blinker: {
+          "0%": { opacity: "100" },
+          "50%": { opacity: "0" },
+          "100%": { opacity: "100" },
         },
       },
       backgroundSize: {

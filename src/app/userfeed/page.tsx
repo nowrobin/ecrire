@@ -1,7 +1,6 @@
 "use client";
 
-import dynamic from "next/dynamic";
-import React, { ButtonHTMLAttributes, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import chevronUP from "../../../public/chevron-up.svg";
 import chevronDown from "../../../public/chevron-down.svg";
 import Image from "next/image";
@@ -15,7 +14,7 @@ interface FeedBackDetail {
 export default function UserFeedback() {
   const [inputValue, setInputValue] = useState("");
   const [userFeed, setUserFeed] = useState<FeedBackDetail[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetch("/api/posts")
@@ -31,9 +30,6 @@ export default function UserFeedback() {
   };
 
   const FeedBacks = ({ vote, feedback, id }: FeedBackDetail) => {
-    if (feedback.length >= 20) {
-      feedback = feedback.slice(0, 20) + "...";
-    }
     return (
       <div className="flex flex-row relative h-[5rem] text-black bg-white w-[18rem] rounded-xl p-2">
         <div className="flex flex-col h-[3rem]  mt-2 justify-center items-center">
@@ -54,7 +50,9 @@ export default function UserFeedback() {
             <Image src={chevronDown} alt="chev_DOWN" width={20} height={20} />
           </button>
         </div>
-        <div className=" ml-[20px] text-start leading-[4rem]">{feedback}</div>
+        <div className="truncate ml-[20px] text-start leading-[4rem] w-[18rem]">
+          {feedback}
+        </div>
       </div>
     );
   };
@@ -121,7 +119,7 @@ export default function UserFeedback() {
     }
   };
   return (
-    <div className="m-32 w-[80%] bg-[#D9D9D9] p-10">
+    <div className="m-32 w-[80%] bg-[#D9D9D9] p-10 rounded-md">
       <div className="flex flex-row gap-4 h-[40px]">
         <input
           type="text"
@@ -140,6 +138,8 @@ export default function UserFeedback() {
       <div className="mt-8 grid sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {isLoading ? (
           <>
+            <FeedBackSkeleton></FeedBackSkeleton>
+            <FeedBackSkeleton></FeedBackSkeleton>
             <FeedBackSkeleton></FeedBackSkeleton>
             <FeedBackSkeleton></FeedBackSkeleton>
             <FeedBackSkeleton></FeedBackSkeleton>
