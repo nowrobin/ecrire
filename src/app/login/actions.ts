@@ -26,9 +26,9 @@ export async function googleLogin() {
     console.log(error);
     redirect("/error");
   }
-  return supabase.auth.getUser();
-  // revalidatePath("/", "layout");
-  // redirect("/");
+
+  revalidatePath("/", "layout");
+  redirect("/");
 }
 
 export async function signOut() {

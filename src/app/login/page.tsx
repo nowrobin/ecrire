@@ -4,17 +4,7 @@ import { googleLogin, signOut } from "./actions";
 import { useEffect, useState } from "react";
 
 export default function LoginPage() {
-  const handleClick = async () => {
-    // if (localStorage.getItem("userName")) {
-    //   console.log("res", localStorage.getItem("userName"));
-    // } else {
-    //   const res = await googleLogin();
-    //   try {
-    //     localStorage.setItem("userName", res.data.user?.user_metadata.name);
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    // }
+  const handleClick = () => {
     googleLogin();
   };
   return (

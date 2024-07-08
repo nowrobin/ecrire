@@ -1,10 +1,11 @@
 "use client";
 import Link from "next/link";
 
-import { getSession } from "@/app/login/actions";
+import { getSession, signOut } from "@/app/login/actions";
 import { cookies } from "next/headers";
 import { createClient } from "@/app/utils/supabase/client";
 import { useEffect, useState } from "react";
+import { redirect } from "next/navigation";
 
 type USERINFO = {
   email: string;
@@ -33,11 +34,19 @@ export default function Header() {
     }
     getUserData();
   }, []);
+  const handleSignout = () => {
+    localStorage.removeItem("userName");
+    signOut();
+    setName("");
+  };
 
   return (
     <div>
       {name != "" ? (
-        <div>{name} 환영합니다</div>
+        <div>
+          <div>{name} 환영합니다</div>
+          <button onClick={handleSignout}>logout</button>
+        </div>
       ) : (
         <Link href="/login">Login</Link>
       )}
