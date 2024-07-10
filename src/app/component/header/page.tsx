@@ -20,20 +20,13 @@ export default function Header() {
       const supabase = createClient();
       await supabase.auth.getUser().then((value) => {
         if (value.data.user) {
-          if (localStorage.getItem("userName")) {
-            const user = localStorage.getItem("userName") as string;
-            setName(user);
-          } else
-            localStorage.setItem(
-              "userName",
-              value.data.user.user_metadata.name
-            );
-          console.log(value.data.user.user_metadata);
-        } else console.log(value);
+          setName(value.data.user.toString());
+        }
       });
     }
     getUserData();
   }, []);
+
   const handleSignout = () => {
     localStorage.removeItem("userName");
     signOut();
