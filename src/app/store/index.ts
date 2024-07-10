@@ -9,7 +9,7 @@ interface ID {
 const IdStore = create<ID>((set) => ({
   id: "init",
   setId: (id) => {
-    set(() => ({ id: id }));
+    set(() => ({ id: "stored id"}));
   },
 }));
 
