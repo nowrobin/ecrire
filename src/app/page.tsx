@@ -6,6 +6,7 @@ import Image from "next/image";
 import chevLeft from "../../public/chevron-left.svg";
 import chevRight from "../../public/chevron-right.svg";
 import Link from "next/link";
+import IdStore from "./store";
 
 interface Word {
   content: string;
@@ -28,10 +29,18 @@ export default function Home() {
   const [inputCollection, setInputCollection] = useState<string[]>([]);
   const [quoteNumber, setQuoteNumber] = useState<number>(0);
   const [quote, setQuote] = useState<QUOTE>(quotes[0]);
+  const [userName, setUserName] = useState("");
+  const { id, setId } = IdStore();
+  const testName = "test";
+
   useEffect(() => {
     setTextValue("");
     setQuote(quotes[quoteNumber]);
-  }, [quoteNumber]);
+    setId(testName);
+    setUserName(id);
+  }, [quoteNumber, id, setId]);
+
+  console.log(userName);
 
   const sentences = quote.content.split("\n");
 
@@ -138,15 +147,12 @@ export default function Home() {
   };
 
   const handleNextClick = () => {
-    console.log("clicked");
     if (quoteNumber + 1 >= quotes.length) {
       setQuoteNumber(0);
     } else setQuoteNumber((prev) => ++prev);
     setQuote(quotes[quoteNumber]);
   };
-  console.log(quotes.length);
   const handlePrevClick = () => {
-    console.log("clicked");
     if (quoteNumber <= 0) {
       setQuoteNumber(quotes.length - 1);
     } else setQuoteNumber((prev) => --prev);
