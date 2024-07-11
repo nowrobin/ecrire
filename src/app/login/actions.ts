@@ -28,6 +28,7 @@ export async function googleLogin() {
   revalidatePath("/", "layout");
   redirect("/");
 }
+
 export async function signUpPWD(formData: FormData) {
   const supabase = createClient();
   const data = {

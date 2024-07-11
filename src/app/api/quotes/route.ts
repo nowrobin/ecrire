@@ -1,4 +1,4 @@
-"user server";
+"use server";
 
 import prisma from "@/app/lib/prisma";
 import { NextRequest } from "next/server";
@@ -14,14 +14,33 @@ export async function GET() {
   return Response.json({ message: "success", data: quotes }, { status: 200 });
 }
 
+type USER = {
+  id: number;
+  username: string;
+  email: string | null;
+  profile_Image: string | null;
+  auth_id: string;
+  provider: string | null;
+};
+
 export async function POST(req: NextRequest) {
-  const { author, content, upload_User } = await req.json();
-  const user = await prisma.quote.create({
+  const { id, author, content, title } = await req.json();
+  const user = await prisma.user.findUnique({
+    where: {
+      id: id,
+    },
+  });
+  const quote = await prisma.quote.create({
     data: {
       author: author,
       content: content,
-      upload_User: upload_User,
+      title: title,
+      upload_User: {
+        connect: {
+          id: id,
+        },
+      },
     },
   });
-  return Response.json({ message: "success", data: user }, { status: 200 });
+  return Response.json({ message: "success", data: quote }, { status: 200 });
 }
