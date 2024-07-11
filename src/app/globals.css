@@ -15,6 +15,12 @@
     --background-end-rgb: 0, 0, 0;
   }
 }
+/* 
+@font-face {
+  font-family: "SUIT Variable";
+  font-weight: 100 400 900;
+  src: url("/public/font/suit/SUIT-Variable.woff2") format("woff2");
+} */
 
 body {
   color: rgb(var(--foreground-rgb));

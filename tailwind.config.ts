@@ -26,12 +26,22 @@ const config: Config = {
       backgroundSize: {
         custom: "300% 100%",
       },
+      backgroundColor: {
+        background: "#F6F9F9",
+      },
+
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
         "gradient-custom":
           "linear-gradient(to right, #D9D9D9 0%, #EDEEF1 50%, #D9D9D9 100%)",
+      },
+      fontFamily: {
+        poppin: [`var(--font-poppins)`],
+        hehmlet: [`var(--font-hahmlet)`],
+        merriweather: [`var(--font-merriweather)`],
+        // suit: ["SUIT Variable"],
       },
     },
   },
