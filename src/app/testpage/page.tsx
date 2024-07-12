@@ -3,10 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import { quotes } from "@/app/quotes";
 import Image from "next/image";
-import chevLeft from "../../public/chev-left.svg";
-import chevRight from "../../public/chev-right.svg";
-import shareIcon from "../../public/share.svg";
-import bookmarkIcon from "../../public/bookmark.png";
+import chevLeft from "../../../public/chev-left.svg";
+import chevRight from "../../../public/chev-right.svg";
+import shareIcon from "../../../public/share.svg";
+import bookmarkIcon from "../../../public/bookmark.png";
 import Link from "next/link";
 
 interface Word {
@@ -31,6 +31,28 @@ export default function Home() {
   useEffect(() => {
     setQuote(quotes[quoteNumber]);
   }, [quoteNumber]);
+
+  let arr = [];
+  let a = quote.content.split(" ");
+  let x = 0; //sentence index
+  let lengthCount = 0;
+  let max = 30;
+  let subArr = [];
+  for (let i in a) {
+    let checkLength = (lengthCount += a[i].length);
+    if (checkLength >= max) {
+      arr.push(subArr.join(" "));
+      subArr = [];
+      lengthCount = 0;
+      x += 1;
+    }
+    subArr.push(a[i]);
+    lengthCount += a[i].length;
+  }
+
+  arr.push(subArr.join(" "));
+  console.log(quote.content);
+  console.log(arr);
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -57,11 +79,13 @@ export default function Home() {
       alert("You Cannot Skip the line");
     }
   };
+
   const handleNextClick = () => {
     if (quoteNumber + 1 >= quotes.length) {
       setQuoteNumber(0);
     } else setQuoteNumber((prev) => ++prev);
     setQuote(quotes[quoteNumber]);
+    setTextValue("");
   };
 
   const handlePrevClick = () => {
@@ -69,7 +93,9 @@ export default function Home() {
       setQuoteNumber(quotes.length - 1);
     } else setQuoteNumber((prev) => --prev);
     setQuote(quotes[quoteNumber]);
+    setTextValue("");
   };
+
   const handlePrintClick = () => {
     if (textAreaRef.current) {
       textAreaRef.current.focus();
@@ -78,16 +104,25 @@ export default function Home() {
 
   const LetterGenerator = ({ wordIndex, content, sentenceIndex }: Letter) => {
     if (wordIndex != 0 && content == " ") {
-      return <span>&nbsp;</span>;
+      return <span className="text-[2rem]">&nbsp;</span>;
     }
     let testInput = textValue.split("");
+    for (let i = 0; i < sentenceIndex; i++) {
+      wordIndex += arr[i].length;
+    }
     return (
       <span className="flex flex-col font-hehmlet">
         {testInput[wordIndex] ? (
           testInput[wordIndex] != content && wordIndex !== letterIndex ? (
-            <span className="text-red-500 text-center text-[2rem]">
-              {testInput[wordIndex]}
-            </span>
+            testInput[wordIndex] == " " ? (
+              <span className="text-red-500 text-center text-[2rem]">
+                {content}
+              </span>
+            ) : (
+              <span className="text-red-500 text-center text-[2rem]">
+                {testInput[wordIndex]}
+              </span>
+            )
           ) : (
             <span className="text-black text-center text-[2rem]">
               {content}
@@ -107,8 +142,9 @@ export default function Home() {
 
   const WordGenerator = ({ content, sentenceIndex }: Word) => {
     let letters = content.split("");
+
     return (
-      <div className="flex flex-wrap justify-start items-start gap-[0.06rem]">
+      <div className="flex justify-start items-start gap-[0.06rem]">
         {letters.map((value, index) => {
           return (
             <LetterGenerator
@@ -181,14 +217,18 @@ export default function Home() {
         <div
           id="print"
           onClick={handlePrintClick}
-          className="flex  w-[40rem] h-[13rem] gap-1"
+          className="flex flex-col w-[40rem] h-[13rem] gap-1"
         >
-          <div className="flex flex-wrap font-hehmlet mt-[3rem]">
-            <WordGenerator
-              key={0}
-              content={quote.content}
-              sentenceIndex={0}
-            ></WordGenerator>
+          <div className="flex flex-col font-hehmlet mt-[3rem]">
+            {arr.map((value, index) => {
+              return (
+                <WordGenerator
+                  key={index}
+                  content={value}
+                  sentenceIndex={index}
+                ></WordGenerator>
+              );
+            })}
           </div>
           <textarea
             className="absolute -z-10 bg-transparent text-transparent outline-none resize-none  caret-transparent"
@@ -202,4 +242,14 @@ export default function Home() {
       </div>
     </div>
   );
+}
+
+{
+  /* <div className="flex flex-wrap font-hehmlet mt-[3rem]">
+            <WordGenerator
+              key={0}
+              content={quote.content}
+              sentenceIndex={0}
+            ></WordGenerator>
+          </div> */
 }
