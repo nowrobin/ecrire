@@ -28,8 +28,6 @@ export default function Home() {
   const [quoteNumber, setQuoteNumber] = useState<number>(0);
   const [quote, setQuote] = useState<QUOTE>(quotes[0]);
   const [letterIndex, setLetterIndex] = useState(0);
-  const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
-
   useEffect(() => {
     setQuote(quotes[quoteNumber]);
   }, [quoteNumber]);
@@ -61,9 +59,6 @@ export default function Home() {
   const handleTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setTextValue(e.currentTarget.value);
     setLetterIndex(e.currentTarget.value.length);
-    // if (arr[currentSentenceIndex].length <= e.currentTarget.value.length) {
-    //   setCurrentSentenceIndex((prev) => (prev += 1));
-    // }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -90,6 +85,7 @@ export default function Home() {
       setQuoteNumber(0);
     } else setQuoteNumber((prev) => ++prev);
     setQuote(quotes[quoteNumber]);
+    setTextValue("");
   };
 
   const handlePrevClick = () => {
@@ -97,6 +93,7 @@ export default function Home() {
       setQuoteNumber(quotes.length - 1);
     } else setQuoteNumber((prev) => --prev);
     setQuote(quotes[quoteNumber]);
+    setTextValue("");
   };
 
   const handlePrintClick = () => {
