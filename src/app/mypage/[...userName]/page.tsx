@@ -1,6 +1,7 @@
 "use client";
 
 import { createClient } from "@/app/utils/supabase/client";
+import { redirect } from "next/navigation";
 import {
   MouseEventHandler,
   TextareaHTMLAttributes,
@@ -30,23 +31,22 @@ export default function UploadQuote({
     }
     getUserData();
   });
-
   const handleTextAreaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setContent(e.currentTarget.value);
   };
   const handleUploadClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const res = fetch("/api/quotes", {
+    const res = fetch("/api/quote", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        id: 0,
+        id: 1,
         author: author,
         content: content,
         title: title,
       }),
-    }).then((response) => console.log(response));
+    }).then((response) => redirect("/"));
   };
 
   return (

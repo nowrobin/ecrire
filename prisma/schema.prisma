@@ -37,7 +37,7 @@ model Quote {
   title                             String
   upload_User                       User     @relation("Upload", fields: [upload_userId], references: [id])
   User_Quote_completed_UserIdToUser User[]   @relation("Quote_completed_UserIdToUser")
-  User_Quote_liked_userIdToUser     User[]   @relation("Quote_liked_userIdToUser")
+  User_Quote_liked_userIdToUser     User[]  @relation("Quote_liked_userIdToUser")
 }
 
 enum Provider {
