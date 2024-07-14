@@ -4,7 +4,7 @@ import prisma from "@/app/lib/prisma";
 import { NextRequest } from "next/server";
 
 export async function GET() {
-  const posts = await prisma.post.findMany({
+  const posts = await prisma.feedBack.findMany({
     orderBy: [
       {
         id: "asc",
@@ -16,7 +16,7 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const { feedback } = await req.json();
-  const post = await prisma.post.create({
+  const post = await prisma.feedBack.create({
     data: {
       feedback: feedback,
     },
@@ -35,7 +35,7 @@ export async function PUT(req: NextRequest) {
       : {
           decrement: 1,
         };
-  const vote = await prisma.post.update({
+  const vote = await prisma.feedBack.update({
     where: {
       id: id,
     },
