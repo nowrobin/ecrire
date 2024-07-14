@@ -14,14 +14,13 @@ export default function QuoteList() {
       const supabase = createClient();
       await supabase.auth.getUser().then((value) => {
         if (value.data.user) {
-          console.log(value.data.user.user_metadata);
-          setUser(value.data.user.user_metadata);
+          setUser(value.data.user);
         }
       });
     }
     getUserData();
   }, []);
-  console.log(quote, user);
+  console.log(user);
   let a = "";
   if (quote) {
     a = quote.content;

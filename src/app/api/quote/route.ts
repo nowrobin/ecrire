@@ -4,13 +4,6 @@ import prisma from "@/app/lib/prisma";
 import { NextRequest } from "next/server";
 
 export async function GET() {
-  // const quotes = await prisma.quote.findMany({
-  //   orderBy: [
-  //     {
-  //       id: "asc",
-  //     },
-  //   ],
-  // });
   const quote = await prisma.quote.findUnique({
     where: {
       id: 1,
@@ -21,6 +14,8 @@ export async function GET() {
 
 export async function PUT(req: NextRequest) {
   const { userId, quoteId } = await req.json();
+  if (userId === null || userId == undefined)
+    throw new Error("Not Authenticated");
   const updateQuote = await prisma.quote.update({
     where: {
       id: quoteId,
@@ -28,7 +23,7 @@ export async function PUT(req: NextRequest) {
     data: {
       User_Quote_liked_userIdToUser: {
         connect: {
-          id: 1,
+          auth_id: userId,
         },
       },
     },
