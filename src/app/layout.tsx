@@ -43,7 +43,6 @@ export default function RootLayout({
       className={`${hahmletFont.variable} ${poppinFont.variable} ${merriweather.variable}`}
     >
       <body className={inter.className}>
-        <Header></Header>
         {children}
         <Analytics />
       </body>

@@ -34,8 +34,10 @@ export async function signUpPWD(formData: FormData) {
   const data = {
     email: formData.get("email") as string,
     password: formData.get("password") as string,
+    // name: formData.get("name") as string,
   };
   const { error } = await supabase.auth.signUp(data);
+  console.log(error);
   if (error) {
     redirect("/error");
   }
@@ -48,7 +50,6 @@ export async function signInPWD(formData: FormData) {
   const data = {
     email: formData.get("email") as string,
     password: formData.get("password") as string,
-    name: formData.get("name") as string,
   };
   const { error } = await supabase.auth.signInWithPassword(data);
   if (error) {

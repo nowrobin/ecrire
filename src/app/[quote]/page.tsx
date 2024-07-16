@@ -3,12 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import { quotes } from "@/app/quotes";
 import Image from "next/image";
-import chevLeft from "../../public/chev-left.svg";
-import chevRight from "../../public/chev-right.svg";
-import shareIcon from "../../public/share.svg";
-import bookmarkIcon from "../../public/bookmark.png";
+import chevLeft from "../../../public/chev-left.svg";
+import chevRight from "../../../public/chev-right.svg";
+import shareIcon from "../../../public/share.svg";
+import bookmarkIcon from "../../../public/bookmark.png";
 import Link from "next/link";
-import { createClient } from "./utils/supabase/client";
+import { createClient } from "../utils/supabase/client";
+import { usePathname, useRouter } from "next/navigation";
 
 interface Word {
   content: string;
@@ -24,13 +25,12 @@ type QUOTE = {
   content: string[];
 };
 
-type USER = {
-  name: string;
-};
-
-export default function Home() {
+export default function QuotePage() {
   const [textValue, setTextValue] = useState(""); //for the print text
-  const [quoteNumber, setQuoteNumber] = useState<number>(4);
+  const pathname = usePathname();
+  const [quoteNumber, setQuoteNumber] = useState<number>(
+    parseInt(pathname.slice(1))
+  );
   const [quote, setQuote] = useState<QUOTE>({
     title: " ",
     author: "",
@@ -47,7 +47,6 @@ export default function Home() {
       .then((data) => {
         const { title, author, content } = data.data;
         setQuote({ title: title, author: author, content: content });
-
         setQuoteLength(content.join("").length);
         setIsloading(false);
       });
@@ -191,7 +190,7 @@ export default function Home() {
           Main Cotent
         </Link>
         <Link
-          href="/quote-list"
+          href="/"
           className="text-[20px] font-normal font-poppin underline underline-offset-2"
         >
           Quote List
@@ -205,7 +204,7 @@ export default function Home() {
               Login
             </Link>
             <Link
-              href="/signup"
+              href="/"
               className="text-[20px] font-normal font-poppin underline underline-offset-2"
             >
               Sign Up
