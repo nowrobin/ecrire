@@ -20,11 +20,6 @@ export default function QuoteList() {
     }
     getUserData();
   }, []);
-  console.log(user);
-  let a = "";
-  if (quote) {
-    a = quote.content;
-  }
   const handleLikeButton = () => {
     const res = fetch("/api/quote", {
       method: "PUT",
@@ -41,7 +36,7 @@ export default function QuoteList() {
     <div>
       {quote ? (
         <div>
-          {a}
+          content
           <button onClick={handleLikeButton}>Liked</button>
         </div>
       ) : (

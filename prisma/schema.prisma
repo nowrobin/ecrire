@@ -30,7 +30,7 @@ model Quote {
   id                                Int      @id @default(autoincrement())
   upload_userId                     Int
   author                            String
-  content                           String
+  content                           String[]
   createdAt                         DateTime @default(now())
   private                           Boolean? @default(false)
   view                              Int      @default(0)

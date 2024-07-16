@@ -1,33 +1,64 @@
 "use server";
 
 import prisma from "@/app/lib/prisma";
+import { NextApiRequest } from "next";
 import { NextRequest } from "next/server";
 
-export async function GET() {
+// { params }: { params: { id: string } }
+export async function GET(
+  req: NextApiRequest,
+  { params }: { params: { id: string } }
+) {
   const quote = await prisma.quote.findUnique({
     where: {
-      id: 1,
+      id: parseInt(params?.id),
     },
   });
-  return Response.json({ message: "success", data: quote }, { status: 200 });
+  return Response.json({ data: quote }, { status: 200 });
 }
 
 export async function PUT(req: NextRequest) {
   const { userId, quoteId } = await req.json();
   if (userId === null || userId == undefined)
     throw new Error("Not Authenticated");
-  const updateQuote = await prisma.quote.update({
+  const connectedUser = await prisma.user.findUnique({
     where: {
-      id: quoteId,
-    },
-    data: {
-      User_Quote_liked_userIdToUser: {
-        connect: {
-          auth_id: userId,
+      auth_id: userId,
+      Quote_Quote_liked_userIdToUser: {
+        some: {
+          id: quoteId,
         },
       },
     },
   });
+  let updateQuote;
+  if (connectedUser) {
+    updateQuote = await prisma.quote.update({
+      where: {
+        id: quoteId,
+      },
+      data: {
+        User_Quote_liked_userIdToUser: {
+          disconnect: {
+            auth_id: userId,
+          },
+        },
+      },
+    });
+  } else {
+    updateQuote = await prisma.quote.update({
+      where: {
+        id: quoteId,
+      },
+      data: {
+        User_Quote_liked_userIdToUser: {
+          connect: {
+            auth_id: userId,
+          },
+        },
+      },
+    });
+  }
   return Response.json(
     { message: "success", data: updateQuote },
     { status: 200 }

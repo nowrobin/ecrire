@@ -14,8 +14,9 @@ export default function UploadQuote({
 }: {
   params: { userName: string[] };
 }) {
-  const [content, setContent] = useState<string>("");
+  const [content, setContent] = useState<string[]>([]);
   const [user, setUser] = useState<string>(params.userName.toString());
+  const [id, setId] = useState<any>();
   const [author, setAuthor] = useState(params.userName.toString());
   const [title, setTitle] = useState("Title");
 
@@ -25,14 +26,14 @@ export default function UploadQuote({
       await supabase.auth.getUser().then((value) => {
         if (value.data.user) {
           console.log(value.data.user.user_metadata);
-          setUser(value.data.user.user_metadata.name);
+          setId(value.data.user.id);
         }
       });
     }
     getUserData();
   });
   const handleTextAreaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setContent(e.currentTarget.value);
+    setContent(e.currentTarget.value.split(""));
   };
   const handleUploadClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     const res = fetch("/api/quote", {
@@ -46,7 +47,7 @@ export default function UploadQuote({
         content: content,
         title: title,
       }),
-    }).then((response) => redirect("/"));
+    }).then((response) => alert("success"));
   };
 
   return (
