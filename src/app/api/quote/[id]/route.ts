@@ -1,12 +1,12 @@
 "use server";
 
 import prisma from "@/app/lib/prisma";
-import { NextApiRequest } from "next";
+
 import { NextRequest } from "next/server";
 
 // { params }: { params: { id: string } }
 export async function GET(
-  req: NextApiRequest,
+  req: NextRequest,
   { params }: { params: { id: string } }
 ) {
   const quote = await prisma.quote.findUnique({

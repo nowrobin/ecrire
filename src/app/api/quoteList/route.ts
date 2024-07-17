@@ -2,10 +2,9 @@
 
 import prisma from "@/app/lib/prisma";
 import { createClient } from "@/app/utils/supabase/server";
-import { NextApiRequest } from "next";
 import { NextRequest } from "next/server";
 
-export async function GET(req: NextApiRequest) {
+export async function GET(req: NextRequest) {
   const supabase = createClient();
   const user = await supabase.auth.getUser();
 
