@@ -9,6 +9,7 @@ import shareIcon from "../../public/share.svg";
 import bookmarkIcon from "../../public/bookmark.png";
 import Link from "next/link";
 import { createClient } from "./utils/supabase/client";
+import { signOut } from "./action/actions";
 
 interface Word {
   content: string;
@@ -24,13 +25,9 @@ type QUOTE = {
   content: string[];
 };
 
-type USER = {
-  name: string;
-};
-
 export default function Home() {
   const [textValue, setTextValue] = useState(""); //for the print text
-  const [quoteNumber, setQuoteNumber] = useState<number>(4);
+  const [quoteNumber, setQuoteNumber] = useState<number>(1);
   const [quote, setQuote] = useState<QUOTE>({
     title: " ",
     author: "",
@@ -39,7 +36,7 @@ export default function Home() {
   const [isLoading, setIsloading] = useState(false);
   const [letterIndex, setLetterIndex] = useState(0);
   const [quoteLength, setQuoteLength] = useState(0);
-  const [user, setUser] = useState("");
+  const [user, setUser] = useState<any>();
   useEffect(() => {
     setIsloading(true);
     fetch(`/api/quote/${quoteNumber}`)
@@ -47,16 +44,14 @@ export default function Home() {
       .then((data) => {
         const { title, author, content } = data.data;
         setQuote({ title: title, author: author, content: content });
-
         setQuoteLength(content.join("").length);
         setIsloading(false);
       });
-
     async function getUserData() {
       const supabase = createClient();
       await supabase.auth.getUser().then((value) => {
         if (value.data.user) {
-          setUser(value.data.user.user_metadata.full_name);
+          setUser(value.data.user);
         }
       });
     }
@@ -92,7 +87,6 @@ export default function Home() {
     if (quoteNumber + 1 >= quotes.length) {
       setQuoteNumber(0);
     } else setQuoteNumber((prev) => ++prev);
-    // setQuote(quotes[quoteNumber]);
     setTextValue("");
   };
 
@@ -100,7 +94,6 @@ export default function Home() {
     if (quoteNumber <= 0) {
       setQuoteNumber(quotes.length - 1);
     } else setQuoteNumber((prev) => --prev);
-    // setQuote(quotes[quoteNumber]);
     setTextValue("");
   };
 
@@ -111,16 +104,16 @@ export default function Home() {
   };
 
   const handleLikeButton = () => {
-    // const res = fetch("/api/quote", {
-    //   method: "PUT",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({
-    //     userId: user.id,
-    //     quoteId: quote.id,
-    //   }),
-    // }).then((response) => console.log(response));
+    const res = fetch(`/api/quote/${quoteNumber}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId: user.id,
+        quoteId: quoteNumber,
+      }),
+    }).then((response) => console.log(response));
   };
 
   const LetterGenerator = ({ wordIndex, content, sentenceIndex }: Letter) => {
@@ -180,6 +173,9 @@ export default function Home() {
     );
   };
 
+  const handleSignout = () => {
+    signOut();
+  };
   return (
     <div className="flex flex-row  w-scren h-screen text-black bg-background">
       <div className="flex flex-col ml-[7.32rem] mt-[3.5rem] gap-[15px]">
@@ -196,7 +192,7 @@ export default function Home() {
         >
           Quote List
         </Link>
-        {user == "" ? (
+        {!user ? (
           <>
             <Link
               href="/login"
@@ -209,15 +205,18 @@ export default function Home() {
               className="text-[20px] font-normal font-poppin underline underline-offset-2"
             >
               Sign Up
-            </Link>{" "}
+            </Link>
           </>
         ) : (
-          <Link
-            href={`/mypage/${user}`}
-            className="text-[20px] font-normal font-poppin underline underline-offset-2"
-          >
-            My page
-          </Link>
+          <>
+            <Link
+              href={`/mypage/${user?.user_metadata.full_name}`}
+              className="text-[20px] font-normal font-poppin underline underline-offset-2"
+            >
+              My page
+            </Link>
+            <button onClick={handleSignout}>logout</button>
+          </>
         )}
         <Link
           href="/"

@@ -27,7 +27,7 @@ export default function QuoteList() {
           <div
             key={index}
             className="bg-slate-600 w-[32rem]"
-            onClick={() => handleQuoteClick(index)}
+            onClick={() => handleQuoteClick(index + 1)}
           >
             <div className="flex flex-row gap-10">
               <div>{value.author}</div>

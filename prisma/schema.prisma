@@ -30,14 +30,14 @@ model Quote {
   id                                Int      @id @default(autoincrement())
   upload_userId                     Int
   author                            String
-  content                           String[]
   createdAt                         DateTime @default(now())
   private                           Boolean? @default(false)
   view                              Int      @default(0)
   title                             String
+  content                           String[]
   upload_User                       User     @relation("Upload", fields: [upload_userId], references: [id])
   User_Quote_completed_UserIdToUser User[]   @relation("Quote_completed_UserIdToUser")
-  User_Quote_liked_userIdToUser     User[]  @relation("Quote_liked_userIdToUser")
+  User_Quote_liked_userIdToUser     User[]   @relation("Quote_liked_userIdToUser")
 }
 
 enum Provider {
