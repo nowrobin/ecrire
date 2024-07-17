@@ -12,7 +12,7 @@ export default function UploadQuote({
   const [content, setContent] = useState<string[]>([]);
   const [user, setUser] = useState<string>(params.userName);
   const [id, setId] = useState<any>();
-  const [author, setAuthor] = useState(params.userName.toString());
+  const [author, setAuthor] = useState(params.userName);
   const [title, setTitle] = useState("Title");
 
   useEffect(() => {
