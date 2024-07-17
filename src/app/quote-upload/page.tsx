@@ -7,10 +7,10 @@ import { useEffect, useState } from "react";
 export default function UploadQuote({
   params,
 }: {
-  params: { userName: string[] };
+  params: { userName: string };
 }) {
   const [content, setContent] = useState<string[]>([]);
-  const [user, setUser] = useState<string>(params.userName.toString());
+  const [user, setUser] = useState<string>(params.userName);
   const [id, setId] = useState<any>();
   const [author, setAuthor] = useState(params.userName.toString());
   const [title, setTitle] = useState("Title");
