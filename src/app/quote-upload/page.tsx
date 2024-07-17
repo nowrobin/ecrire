@@ -2,21 +2,17 @@
 
 import { createClient } from "@/app/utils/supabase/client";
 import { redirect } from "next/navigation";
-import {
-  MouseEventHandler,
-  TextareaHTMLAttributes,
-  useEffect,
-  useState,
-} from "react";
+import { useEffect, useState } from "react";
 
 export default function UploadQuote({
   params,
 }: {
-  params: { userName: string[] };
+  params: { userName: string };
 }) {
-  const [content, setContent] = useState<string>("");
-  const [user, setUser] = useState<string>(params.userName.toString());
-  const [author, setAuthor] = useState(params.userName.toString());
+  const [content, setContent] = useState<string[]>([]);
+  const [user, setUser] = useState<string>(params.userName);
+  const [id, setId] = useState<any>();
+  const [author, setAuthor] = useState(params.userName);
   const [title, setTitle] = useState("Title");
 
   useEffect(() => {
@@ -25,14 +21,14 @@ export default function UploadQuote({
       await supabase.auth.getUser().then((value) => {
         if (value.data.user) {
           console.log(value.data.user.user_metadata);
-          setUser(value.data.user.user_metadata.name);
+          setId(value.data.user.id);
         }
       });
     }
     getUserData();
   });
   const handleTextAreaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setContent(e.currentTarget.value);
+    setContent(e.currentTarget.value.split(""));
   };
   const handleUploadClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     const res = fetch("/api/quote", {
@@ -46,7 +42,7 @@ export default function UploadQuote({
         content: content,
         title: title,
       }),
-    }).then((response) => redirect("/"));
+    }).then((response) => alert("success"));
   };
 
   return (
@@ -69,7 +65,6 @@ export default function UploadQuote({
         id=""
         onChange={handleTextAreaChange}
       ></textarea>
-
       <button onClick={handleUploadClick}>upload</button>
     </div>
   );

@@ -1,12 +1,13 @@
 "use client";
+
 import Link from "next/link";
-import { googleLogin, signOut, signInPWD, signUpPWD } from "../action/actions";
+import { googleLogin, signUpPWD } from "../action/actions";
 import { useEffect, useState } from "react";
 
 export default function LoginPage() {
   return (
-    <div className="flex flex-col m-10 bg-slate-500 p-10 w-[38rem] gap-10">
-      <div className="text-2xl text-center">Login</div>
+    <div className="flex flex-col m-10 bg-slate-500 p-10  gap-10 w-[38rem]">
+      <div className="text-2xl text-center">Sign UP</div>
       <form className="flex flex-col w-[32rem]">
         <label htmlFor="email">Email:</label>
         <input
@@ -24,20 +25,28 @@ export default function LoginPage() {
           type="password"
           required
         />
+        <label htmlFor="name">Name:</label>
+        <input
+          className="text-black"
+          id="name"
+          name="name"
+          type="name"
+          required
+        />
         <button
           className="bg-blue-500 text-white mt-4 h-12"
-          formAction={signInPWD}
+          formAction={signUpPWD}
         >
-          Log in
+          Sign up
         </button>
       </form>
       <Link
+        href="/login"
         className=" underline underline-offset-2 hover:text-red-300"
-        href="/signup"
       >
-        회원가입 하러가기
+        Already have accrount?
       </Link>
-      <hr className="w-[32rem]" />
+      <hr className="bg-white text-white  w-[32rem]"></hr>
       <button
         className="bg-red-400 w-[32rem] h-12 "
         onClick={() => googleLogin()}
