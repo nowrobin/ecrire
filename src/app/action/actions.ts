@@ -22,7 +22,6 @@ export async function googleLogin() {
     redirect(data.url); // use the redirect API for your server framework
   }
   if (error) {
-    console.log(error);
     redirect("/error");
   }
   revalidatePath("/", "layout");
@@ -34,10 +33,13 @@ export async function signUpPWD(formData: FormData) {
   const data = {
     email: formData.get("email") as string,
     password: formData.get("password") as string,
-    // name: formData.get("name") as string,
+    options: {
+      data: {
+        full_name: formData.get("name") as string,
+      },
+    },
   };
   const { error } = await supabase.auth.signUp(data);
-  console.log(error);
   if (error) {
     redirect("/error");
   }

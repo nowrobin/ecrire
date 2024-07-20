@@ -20,7 +20,6 @@ export default function UploadQuote({
       const supabase = createClient();
       await supabase.auth.getUser().then((value) => {
         if (value.data.user) {
-          console.log(value.data.user.user_metadata);
           setId(value.data.user.id);
         }
       });

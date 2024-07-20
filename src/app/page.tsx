@@ -10,6 +10,7 @@ import bookmarkIcon from "../../public/bookmark.png";
 import Link from "next/link";
 import { createClient } from "./utils/supabase/client";
 import { signOut } from "./action/actions";
+import { useRouter } from "next/navigation";
 
 interface Word {
   content: string;
@@ -37,6 +38,8 @@ export default function Home() {
   const [letterIndex, setLetterIndex] = useState(0);
   const [quoteLength, setQuoteLength] = useState(0);
   const [user, setUser] = useState<any>();
+  const router = useRouter();
+
   useEffect(() => {
     setIsloading(true);
     fetch(`/api/quote/${quoteNumber}`)
@@ -52,12 +55,12 @@ export default function Home() {
       await supabase.auth.getUser().then((value) => {
         if (value.data.user) {
           setUser(value.data.user);
-        }
+        } else setUser(null);
       });
     }
     getUserData();
-  }, [quoteNumber]);
-
+  }, [quoteNumber, user]);
+  console.log(user);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const handleTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setTextValue(e.currentTarget.value);
@@ -175,6 +178,7 @@ export default function Home() {
 
   const handleSignout = () => {
     signOut();
+    setUser(null);
   };
   return (
     <div className="flex flex-row  w-scren h-screen text-black bg-background">

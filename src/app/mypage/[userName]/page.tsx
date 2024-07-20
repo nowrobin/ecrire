@@ -31,7 +31,6 @@ export default function UploadQuote({
         setState(res.data);
         setCompleteList(res.data.Quote_Quote_completed_UserIdToUser);
         setLikeList(res.data.Quote_Quote_liked_userIdToUser);
-        console.log(res.data.upLoaded_Posts);
         setUploadList(res.data.upLoaded_Posts);
       });
   }, []);
