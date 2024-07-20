@@ -1,26 +1,47 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
-// datasource db {
-//   provider = "postgresql"
-//   url      = env("DATABASE_URL")
-// }
-
 datasource db {
-  provider = "postgresql"
-  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
-  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
-model Post {
-  id        Int      @id @default(autoincrement())
-  feedback   String
-  vote Int @default(0)
+model FeedBack {
+  id       Int    @id @default(autoincrement())
+  feedback String
+  vote     Int    @default(0)
+}
+
+model User {
+  id                                 Int     @id @default(autoincrement())
+  username                           String
+  email                              String? @unique
+  profile_Image                      String? @unique
+  auth_id                            String  @unique @db.Uuid
+  provider                           String?
+  upLoaded_Posts                     Quote[] @relation("Upload")
+  Quote_Quote_completed_UserIdToUser Quote[] @relation("Quote_completed_UserIdToUser")
+  Quote_Quote_liked_userIdToUser     Quote[] @relation("Quote_liked_userIdToUser")
+}
+
+model Quote {
+  id                                Int      @id @default(autoincrement())
+  upload_userId                     Int
+  author                            String
+  createdAt                         DateTime @default(now())
+  private                           Boolean? @default(false)
+  view                              Int      @default(0)
+  title                             String
+  content                           String[]
+  upload_User                       User     @relation("Upload", fields: [upload_userId], references: [id])
+  User_Quote_completed_UserIdToUser User[]   @relation("Quote_completed_UserIdToUser")
+  User_Quote_liked_userIdToUser     User[]   @relation("Quote_liked_userIdToUser")
+}
+
+enum Provider {
+  GOOGLE
+  EMAIL
+  KAKAO
 }

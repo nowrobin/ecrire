@@ -8,6 +8,8 @@ import chevRight from "../../../public/chev-right.svg";
 import shareIcon from "../../../public/share.svg";
 import bookmarkIcon from "../../../public/bookmark.png";
 import Link from "next/link";
+import { createClient } from "../utils/supabase/client";
+import { usePathname, useRouter } from "next/navigation";
 
 interface Word {
   content: string;
@@ -20,42 +22,47 @@ interface Letter extends Word {
 type QUOTE = {
   title: string;
   author: string;
-  content: string;
+  content: string[];
 };
 
-export default function Home() {
+export default function QuotePage() {
   const [textValue, setTextValue] = useState(""); //for the print text
-  const [quoteNumber, setQuoteNumber] = useState<number>(0);
-  const [quote, setQuote] = useState<QUOTE>(quotes[0]);
+  const pathname = usePathname();
+  const [quoteNumber, setQuoteNumber] = useState<number>(
+    parseInt(pathname.slice(1))
+  );
+  const [quote, setQuote] = useState<QUOTE>({
+    title: " ",
+    author: "",
+    content: ["", ""],
+  });
+  const [isLoading, setIsloading] = useState(false);
   const [letterIndex, setLetterIndex] = useState(0);
+  const [quoteLength, setQuoteLength] = useState(0);
+  const [user, setUser] = useState("");
   useEffect(() => {
-    setQuote(quotes[quoteNumber]);
+    setIsloading(true);
+    fetch(`/api/quote/${quoteNumber}`)
+      .then((res) => res.json())
+      .then((data) => {
+        const { title, author, content } = data.data;
+        setQuote({ title: title, author: author, content: content });
+        setQuoteLength(content.join("").length);
+        setIsloading(false);
+      });
+
+    async function getUserData() {
+      const supabase = createClient();
+      await supabase.auth.getUser().then((value) => {
+        if (value.data.user) {
+          setUser(value.data.user.user_metadata.full_name);
+        }
+      });
+    }
+    getUserData();
   }, [quoteNumber]);
 
-  let arr = [];
-  let a = quote.content.split(" ");
-  let x = 0; //sentence index
-  let lengthCount = 0;
-  let max = 30;
-  let subArr = [];
-  for (let i in a) {
-    let checkLength = (lengthCount += a[i].length);
-    if (checkLength >= max) {
-      arr.push(subArr.join(" "));
-      subArr = [];
-      lengthCount = 0;
-      x += 1;
-    }
-    subArr.push(a[i]);
-    lengthCount += a[i].length;
-  }
-
-  arr.push(subArr.join(" "));
-  console.log(quote.content);
-  console.log(arr);
-
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
-
   const handleTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setTextValue(e.currentTarget.value);
     setLetterIndex(e.currentTarget.value.length);
@@ -63,7 +70,7 @@ export default function Home() {
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     const key = e.key;
-    if (letterIndex == quote.content.length) {
+    if (letterIndex == quoteLength) {
       alert("End");
     }
     if (key == " " || key == "Spacebar") {
@@ -84,7 +91,7 @@ export default function Home() {
     if (quoteNumber + 1 >= quotes.length) {
       setQuoteNumber(0);
     } else setQuoteNumber((prev) => ++prev);
-    setQuote(quotes[quoteNumber]);
+    // setQuote(quotes[quoteNumber]);
     setTextValue("");
   };
 
@@ -92,7 +99,7 @@ export default function Home() {
     if (quoteNumber <= 0) {
       setQuoteNumber(quotes.length - 1);
     } else setQuoteNumber((prev) => --prev);
-    setQuote(quotes[quoteNumber]);
+    // setQuote(quotes[quoteNumber]);
     setTextValue("");
   };
 
@@ -102,13 +109,26 @@ export default function Home() {
     }
   };
 
+  const handleLikeButton = () => {
+    // const res = fetch("/api/quote", {
+    //   method: "PUT",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify({
+    //     userId: user.id,
+    //     quoteId: quote.id,
+    //   }),
+    // }).then((response) => console.log(response));
+  };
+
   const LetterGenerator = ({ wordIndex, content, sentenceIndex }: Letter) => {
     if (wordIndex != 0 && content == " ") {
       return <span className="text-[2rem]">&nbsp;</span>;
     }
     let testInput = textValue.split("");
     for (let i = 0; i < sentenceIndex; i++) {
-      wordIndex += arr[i].length;
+      wordIndex += quote!.content[i].length;
     }
     return (
       <span className="flex flex-col font-hehmlet">
@@ -175,18 +195,29 @@ export default function Home() {
         >
           Quote List
         </Link>
-        <Link
-          href="/"
-          className="text-[20px] font-normal font-poppin underline underline-offset-2"
-        >
-          Login
-        </Link>
-        <Link
-          href="/"
-          className="text-[20px] font-normal font-poppin underline underline-offset-2"
-        >
-          Sign Up
-        </Link>
+        {user == "" ? (
+          <>
+            <Link
+              href="/login"
+              className="text-[20px] font-normal font-poppin underline underline-offset-2"
+            >
+              Login
+            </Link>
+            <Link
+              href="/"
+              className="text-[20px] font-normal font-poppin underline underline-offset-2"
+            >
+              Sign Up
+            </Link>{" "}
+          </>
+        ) : (
+          <Link
+            href={`/mypage/${user}`}
+            className="text-[20px] font-normal font-poppin underline underline-offset-2"
+          >
+            My page
+          </Link>
+        )}
         <Link
           href="/"
           className="text-[20px] mt-[30px] text-[#5D5D5D] font-normal font-poppin underline underline-offset-2"
@@ -201,13 +232,13 @@ export default function Home() {
           </button>
           <div className="flex flex-col ">
             <div className="flex flex-wrap text-[1.25rem] text-[#5D5D5D]">
-              {quote.author} | {quote.title}
+              {quote!.author} | {quote!.title}
             </div>
           </div>
           <button className="" onClick={handleNextClick}>
             <Image src={chevRight} alt="chevLeft" width={32} />
           </button>
-          <button className="ml-[16rem]">
+          <button className="ml-[16rem]" onClick={handleLikeButton}>
             <Image src={bookmarkIcon} alt="bookmark" width={32} />
           </button>
           <button className="">
@@ -220,7 +251,7 @@ export default function Home() {
           className="flex flex-col w-[40rem] h-[13rem] gap-1"
         >
           <div className="flex flex-col font-hehmlet mt-[3rem]">
-            {arr.map((value, index) => {
+            {quote!.content?.map((value, index) => {
               return (
                 <WordGenerator
                   key={index}
@@ -242,14 +273,4 @@ export default function Home() {
       </div>
     </div>
   );
-}
-
-{
-  /* <div className="flex flex-wrap font-hehmlet mt-[3rem]">
-            <WordGenerator
-              key={0}
-              content={quote.content}
-              sentenceIndex={0}
-            ></WordGenerator>
-          </div> */
 }
