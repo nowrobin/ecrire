@@ -4,9 +4,14 @@ import prisma from "@/app/lib/prisma";
 import { createClient } from "@/app/utils/supabase/server";
 import { NextRequest } from "next/server";
 
-export async function GET(req: NextRequest) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { quote_id: string } }
+) {
   const supabase = createClient();
   const user = await supabase.auth.getUser();
+  const quoteNumber = parseInt(params.quote_id);
+  console.log(quoteNumber);
 
   const quotes = user.data.user
     ? await prisma.user.findUnique({
@@ -20,6 +25,9 @@ export async function GET(req: NextRequest) {
         },
       })
     : await prisma.quote.findMany({
+        take: 10,
+        skip: quoteNumber ? 10 : 0,
+        ...(quoteNumber && { cursor: { id: quoteNumber } }),
         orderBy: [
           {
             id: "asc",
