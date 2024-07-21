@@ -15,7 +15,6 @@ export default function QuoteList() {
         setList(data);
       });
   }, [page]);
-  console.log(list);
   const handleQuoteClick = (index: number) => {
     router.push(`/${index}`);
   };

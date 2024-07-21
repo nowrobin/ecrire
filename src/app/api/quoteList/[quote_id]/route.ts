@@ -11,8 +11,6 @@ export async function GET(
   const supabase = createClient();
   const user = await supabase.auth.getUser();
   const quoteNumber = parseInt(params.quote_id);
-  console.log(quoteNumber);
-
   const quotes = user.data.user
     ? await prisma.user.findUnique({
         where: {
