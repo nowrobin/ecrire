@@ -11,6 +11,7 @@ import Link from "next/link";
 import { createClient } from "./utils/supabase/client";
 import { signOut } from "./action/actions";
 import { useRouter } from "next/navigation";
+import IdStore from "./store";
 
 interface Word {
   content: string;
@@ -39,16 +40,18 @@ export default function Home() {
   const [quoteLength, setQuoteLength] = useState(0);
   const [user, setUser] = useState<any>();
   const router = useRouter();
+  const store = IdStore();
 
   useEffect(() => {
     setIsloading(true);
-    fetch(`/api/quote/${quoteNumber}`)
+    fetch(`/api/quote/${store.id ? store.id : quoteNumber}`)
       .then((res) => res.json())
       .then((data) => {
         const { title, author, content } = data.data;
         setQuote({ title: title, author: author, content: content });
         setQuoteLength(content.join("").length);
         setIsloading(false);
+        store.setQuoteId(null);
       });
     async function getUserData() {
       const supabase = createClient();
@@ -59,8 +62,8 @@ export default function Home() {
       });
     }
     getUserData();
-  }, [quoteNumber, user]);
-  console.log(user);
+  }, [quoteNumber, user, store]);
+
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const handleTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setTextValue(e.currentTarget.value);
