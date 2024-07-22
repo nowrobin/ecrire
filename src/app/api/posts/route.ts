@@ -26,7 +26,6 @@ export async function POST(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
   const { id, upDown } = await req.json();
-  console.log(id, upDown);
   const v =
     upDown == "UP"
       ? {

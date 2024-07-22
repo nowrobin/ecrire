@@ -66,13 +66,17 @@ export async function PUT(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const { id, author, content, title } = await req.json();
+  const { id, author, title, content, full_content } = await req.json();
   if (id === null) throw new Error("Not Authenticated");
+  // let content: string[];
+  let maxLength = 26;
+
   const newQuote = await prisma.quote.create({
     data: {
       author: author,
       content: content,
       title: title,
+      full_content: full_content,
       upload_User: {
         connect: {
           id: id,

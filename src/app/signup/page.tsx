@@ -30,7 +30,7 @@ export default function LoginPage() {
           className="text-black"
           id="name"
           name="name"
-          type="name"
+          type="text"
           required
         />
         <button

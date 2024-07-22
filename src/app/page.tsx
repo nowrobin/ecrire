@@ -10,6 +10,8 @@ import bookmarkIcon from "../../public/bookmark.png";
 import Link from "next/link";
 import { createClient } from "./utils/supabase/client";
 import { signOut } from "./action/actions";
+import { useRouter } from "next/navigation";
+import IdStore from "./store";
 
 interface Word {
   content: string;
@@ -37,26 +39,30 @@ export default function Home() {
   const [letterIndex, setLetterIndex] = useState(0);
   const [quoteLength, setQuoteLength] = useState(0);
   const [user, setUser] = useState<any>();
+  const router = useRouter();
+  const store = IdStore();
+
   useEffect(() => {
     setIsloading(true);
-    fetch(`/api/quote/${quoteNumber}`)
+    fetch(`/api/quote/${store.id ? store.id : quoteNumber}`)
       .then((res) => res.json())
       .then((data) => {
         const { title, author, content } = data.data;
         setQuote({ title: title, author: author, content: content });
         setQuoteLength(content.join("").length);
         setIsloading(false);
+        store.setQuoteId(null);
       });
     async function getUserData() {
       const supabase = createClient();
       await supabase.auth.getUser().then((value) => {
         if (value.data.user) {
           setUser(value.data.user);
-        }
+        } else setUser(null);
       });
     }
     getUserData();
-  }, [quoteNumber]);
+  }, [quoteNumber, user, store]);
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const handleTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -175,6 +181,7 @@ export default function Home() {
 
   const handleSignout = () => {
     signOut();
+    setUser(null);
   };
   return (
     <div className="flex flex-row  w-scren h-screen text-black bg-background">

@@ -10,6 +10,7 @@ export default function UploadQuote({
   params: { userName: string };
 }) {
   const [content, setContent] = useState<string[]>([]);
+  const [fullContent, setFullContent] = useState<string>("");
   const [user, setUser] = useState<string>(params.userName);
   const [id, setId] = useState<any>();
   const [author, setAuthor] = useState(params.userName);
@@ -20,27 +21,29 @@ export default function UploadQuote({
       const supabase = createClient();
       await supabase.auth.getUser().then((value) => {
         if (value.data.user) {
-          console.log(value.data.user.user_metadata);
           setId(value.data.user.id);
         }
       });
     }
     getUserData();
   });
+  //TODO: FIX the setContent, array have to split with the max length of 26
   const handleTextAreaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setFullContent(e.currentTarget.value);
     setContent(e.currentTarget.value.split(""));
   };
   const handleUploadClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const res = fetch("/api/quote", {
+    const res = fetch(`/api/quote/0`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        id: 1,
+        id: id,
         author: author,
         content: content,
         title: title,
+        full_content: fullContent,
       }),
     }).then((response) => alert("success"));
   };
