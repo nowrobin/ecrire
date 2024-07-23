@@ -13,17 +13,18 @@ export async function GET(
       OR: [
         {
           full_content: {
-            contains: params.keyword,
+            search: params.keyword.split(" ").join("|"),
           },
         },
         {
           author: {
-            contains: params.keyword,
+            search: params.keyword,
           },
         },
         {
           title: {
-            contains: params.keyword,
+            // contains: params.keyword,
+            search: params.keyword,
           },
         },
       ],

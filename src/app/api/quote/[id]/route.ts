@@ -9,11 +9,14 @@ export async function GET(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const quote = await prisma.quote.findUnique({
-    where: {
-      id: parseInt(params?.id),
-    },
-  });
+  const quote = await prisma.$transaction([
+    prisma.quote.findUnique({
+      where: {
+        id: parseInt(params?.id),
+      },
+    }),
+    prisma.quote.count(),
+  ]);
   return Response.json({ data: quote }, { status: 200 });
 }
 

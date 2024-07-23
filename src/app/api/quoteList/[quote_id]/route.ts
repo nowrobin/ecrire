@@ -2,6 +2,7 @@
 
 import prisma from "@/app/lib/prisma";
 import { createClient } from "@/app/utils/supabase/server";
+import { NextApiRequest } from "next";
 import { NextRequest } from "next/server";
 
 export async function GET(
@@ -26,7 +27,7 @@ export async function GET(
         })
       : prisma.quote.findMany({
           take: 10,
-          skip: quoteNumber ? 10 : 0,
+          skip: quoteNumber ? 10 * quoteNumber : 0,
           ...(quoteNumber && { cursor: { id: quoteNumber } }),
           orderBy: [
             {
@@ -37,16 +38,3 @@ export async function GET(
   ]);
   return Response.json({ message: "success", data: quotes }, { status: 200 });
 }
-
-// export async function PUT(req: NextRequest) {
-//   const { id, full_content } = await req.json();
-//   const quotes = await prisma.quote.update({
-//     where: {
-//       id: id,
-//     },
-//     data: {
-//       full_content: full_content,
-//     },
-//   });
-//   return Response.json({ message: "success", data: quotes }, { status: 200 });
-// }

@@ -12,7 +12,6 @@ import { createClient } from "./utils/supabase/client";
 import { signOut } from "./action/actions";
 import { useRouter } from "next/navigation";
 import IdStore from "./store";
-
 interface Word {
   content: string;
   sentenceIndex: number;
@@ -31,15 +30,16 @@ export default function Home() {
   const [textValue, setTextValue] = useState(""); //for the print text
   const [quoteNumber, setQuoteNumber] = useState<number>(1);
   const [quote, setQuote] = useState<QUOTE>({
-    title: " ",
-    author: "",
-    content: ["", ""],
+    title: "제목",
+    author: "저자",
+    content: ["글 불러오는중", ""],
   });
   const [isLoading, setIsloading] = useState(false);
   const [letterIndex, setLetterIndex] = useState(0);
   const [quoteLength, setQuoteLength] = useState(0);
-  const [user, setUser] = useState<any>();
-  const router = useRouter();
+  const [listCount, setListCount] = useState(0);
+  const [user, setUser] = useState<any>(null);
+  // const router = useRouter();
   const store = IdStore();
 
   useEffect(() => {
@@ -47,10 +47,11 @@ export default function Home() {
     fetch(`/api/quote/${store.id ? store.id : quoteNumber}`)
       .then((res) => res.json())
       .then((data) => {
-        const { title, author, content } = data.data;
+        const { title, author, content } = data.data[0];
         setQuote({ title: title, author: author, content: content });
         setQuoteLength(content.join("").length);
         setIsloading(false);
+        setListCount(data.data[1]);
         store.setQuoteId(null);
       });
     async function getUserData() {
@@ -62,7 +63,7 @@ export default function Home() {
       });
     }
     getUserData();
-  }, [quoteNumber, user, store]);
+  }, [quoteNumber]);
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const handleTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -90,15 +91,15 @@ export default function Home() {
   };
 
   const handleNextClick = () => {
-    if (quoteNumber + 1 >= quotes.length) {
-      setQuoteNumber(0);
+    if (quoteNumber + 1 >= listCount) {
+      setQuoteNumber(1);
     } else setQuoteNumber((prev) => ++prev);
     setTextValue("");
   };
 
   const handlePrevClick = () => {
-    if (quoteNumber <= 0) {
-      setQuoteNumber(quotes.length - 1);
+    if (quoteNumber <= 1) {
+      setQuoteNumber(listCount);
     } else setQuoteNumber((prev) => --prev);
     setTextValue("");
   };
@@ -124,7 +125,7 @@ export default function Home() {
 
   const LetterGenerator = ({ wordIndex, content, sentenceIndex }: Letter) => {
     if (wordIndex != 0 && content == " ") {
-      return <span className="text-[2rem]">&nbsp;</span>;
+      return <span className="text-[2em]">&nbsp;</span>;
     }
     let testInput = textValue.split("");
     for (let i = 0; i < sentenceIndex; i++) {
@@ -135,26 +136,24 @@ export default function Home() {
         {testInput[wordIndex] ? (
           testInput[wordIndex] != content && wordIndex !== letterIndex ? (
             testInput[wordIndex] == " " ? (
-              <span className="text-red-500 text-center text-[2rem]">
+              <span className="text-red-500 text-center text-[2em]">
                 {content}
               </span>
             ) : (
-              <span className="text-red-500 text-center text-[2rem]">
+              <span className="text-red-500 text-center text-[2em]">
                 {testInput[wordIndex]}
               </span>
             )
           ) : (
-            <span className="text-black text-center text-[2rem]">
-              {content}
-            </span>
+            <span className="text-black text-center text-[2em]">{content}</span>
           )
         ) : (
-          <span className="text-[#818181] text-center text-[2rem]">
+          <span className="text-[#818181] text-center text-[2em]">
             {content}
           </span>
         )}
         {letterIndex == wordIndex && (
-          <span className=" bg-black animate-blink h-[1px] text-[2rem]"></span>
+          <span className=" bg-black animate-blink h-[1px] text-[2em]"></span>
         )}
       </span>
     );
@@ -184,8 +183,8 @@ export default function Home() {
     setUser(null);
   };
   return (
-    <div className="flex flex-row  w-scren h-screen text-black bg-background">
-      <div className="flex flex-col ml-[7.32rem] mt-[3.5rem] gap-[15px]">
+    <div className="flex flex-col md:flex-row w-scren h-screen text-black bg-background">
+      <div className="flex flex-row  md:flex-col ml-[7.32rem] mt-[3.5rem] gap-[15px]">
         <div className="text-[40px] font-merriweather font-bold">Ecrire</div>
         <Link
           href="/"
@@ -232,12 +231,12 @@ export default function Home() {
           Leave us feedback...
         </Link>
       </div>
-      <div className="flex flex-col items-start ml-[16rem] mt-[6rem]">
+      <div className="flex flex-col items-start ml-[12em] mt-[6rem]">
         <div className="flex flex-row gap-4 ">
           <button onClick={handlePrevClick}>
             <Image src={chevLeft} alt="chevLeft" width={32} />
           </button>
-          <div className="flex flex-col ">
+          <div className="flex">
             <div className="flex flex-wrap text-[1.25rem] text-[#5D5D5D]">
               {quote!.author} | {quote!.title}
             </div>
@@ -245,7 +244,7 @@ export default function Home() {
           <button className="" onClick={handleNextClick}>
             <Image src={chevRight} alt="chevLeft" width={32} />
           </button>
-          <button className="ml-[16rem]" onClick={handleLikeButton}>
+          <button className="ml-[12em]" onClick={handleLikeButton}>
             <Image src={bookmarkIcon} alt="bookmark" width={32} />
           </button>
           <button className="">
@@ -255,7 +254,7 @@ export default function Home() {
         <div
           id="print"
           onClick={handlePrintClick}
-          className="flex flex-col w-[40rem] h-[13rem] gap-1"
+          className="flex flex-col w-[40em] h-[13rem] gap-1"
         >
           <div className="flex flex-col font-hehmlet mt-[3rem]">
             {quote!.content?.map((value, index) => {
