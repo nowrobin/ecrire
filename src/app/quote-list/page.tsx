@@ -71,12 +71,14 @@ export default function QuoteList() {
   // const onLoadSearch = useCallback(debounce(getQuote, 1000), [
   //   searchkeyword.length,
   // ]);
-
-  const PageGenerator = () => {
+  const PageGen = () => {
     const index = Math.ceil(listLength / 10);
-    return <span className="text-black">{index}</span>;
+    const paginationIndex = [];
+    for (let i = 1; i > index + 1; i++) {
+      paginationIndex.push(<span className="text-black">{i}</span>);
+    }
+    return paginationIndex;
   };
-
   //TODO: fix the type of the value in map
   return (
     <div className="flex flex-col gap-2 w-screen text-slate-700 items-center justify-center">
@@ -140,7 +142,7 @@ export default function QuoteList() {
         >
           Prev
         </button>
-        <PageGenerator></PageGenerator>
+        <div>{PageGen()}</div>
         <button onClick={() => setPage((prev) => (prev += 1))}>Next</button>
       </div>
     </div>
