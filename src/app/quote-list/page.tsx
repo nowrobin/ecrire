@@ -142,7 +142,7 @@ export default function QuoteList() {
         >
           Prev
         </button>
-        <div>{PageGen()}</div>
+        <div>{page == 0 && "as"}</div>
         <button onClick={() => setPage((prev) => (prev += 1))}>Next</button>
       </div>
     </div>
